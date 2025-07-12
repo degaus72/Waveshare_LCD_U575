@@ -131,7 +131,7 @@ int main(void)
   HAL_Delay(500);
   //ST7789_WriteString(10, 10, "!Hello, Gemini!", &Font_16x26, ST7789_WHITE, ST7789_BLUE);
 //  ST7789_WriteString(50, 50, "!STM32 NUCLEO-U575ZI-Q", &Font_7x10, ST7789_YELLOW, ST7789_BLUE);
-  ST7789_WriteString(50, 50, "!", &Font_7x10, ST7789_YELLOW, ST7789_BLUE);
+  ST7789_WriteString(50, 50, "Hello", &Font_7x10, ST7789_YELLOW, ST7789_BLUE);
 //  ST7789_WriteString(10, 60, "!Waveshare 1.69inch LCD", &Font_11x18, ST7789_GREENYELLOW, ST7789_BLUE);
 //  ST7789_WriteString(10, 90, "!Touch and Display Demo", &Font_7x10, ST7789_CYAN, ST7789_BLUE);
 
