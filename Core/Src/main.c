@@ -131,10 +131,10 @@ int main(void)
   CST816T_Init(&hi2c1); // Initialize the touch controller
 
   // Initial screen setup
-  ST7789_DrawString(10, 10, "Hello, Gemini!", &Font_8x14, ST7789_WHITE, ST7789_BLUE);
-  ST7789_DrawString(10, 40, "STM32 NUCLEO-U575ZI-Q", &Font_7x11, ST7789_WHITE, ST7789_BLUE);
-  ST7789_DrawString(10, 60, "Waveshare 1.69inch LCD", &Font_9x19, ST7789_GREENYELLOW, ST7789_BLUE);
-  ST7789_DrawString(10, 90, "Touch and Display Demo", &Font_7x11, ST7789_CYAN, ST7789_BLUE);
+  ST7789_DrawString(10, 10, "Hello, Gemini!", &Font_8x14, ST7789_WHITE, ST7789_BLACK);
+  ST7789_DrawString(10, 40, "STM32 NUCLEO-U575ZI-Q", &Font_7x11, ST7789_WHITE, ST7789_BLACK);
+  ST7789_DrawString(10, 60, "Waveshare 1.69inch LCD", &Font_8x14, ST7789_WHITE, ST7789_BLACK);
+  ST7789_DrawString(10, 90, "Touch and Display Demo", &Font_7x11, ST7789_WHITE, ST7789_BLACK);
 
   char buffer[50];
   int touch_display_y = 150; // Y position to display touch coordinates

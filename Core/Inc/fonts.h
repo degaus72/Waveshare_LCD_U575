@@ -17,6 +17,6 @@ typedef struct {
 // Declare the raw data array for the 8x8 Basic Font
 extern const FontDef_t Font_7x11;
 extern const FontDef_t Font_8x14;
-extern const FontDef_t Font_9x19;
+extern const FontDef_t Font_15x32;
 
 #endif /* INC_FONTS_H_ */
