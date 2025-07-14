@@ -1,13 +1,7 @@
-/*
- * st7789.c
- *
- *  Created on: Jul 11, 2025
- *      Author: mgosi
- */
-
 #include "st7789.h"
 #include <string.h> // For strlen
 #include <stdio.h>  // For snprintf (if needed for debugging)
+#include <stdlib.h>
 
 // Global SPI handle pointer
 SPI_HandleTypeDef *hspi_st7789;
@@ -36,15 +30,20 @@ void ST7789_WriteData(uint8_t *buff, size_t buff_size) {
 }
 
 void ST7789_SetAddressWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
+    // --- KEY MODIFICATION FOR 240x280 DISPLAY ---
+    // For 240x280 ST7789V2, typically a Y-offset is needed.
+    // The controller is 240x320, but the panel is 240x280.
+    // This centers the 280 pixels vertically within the 320-pixel frame.
+    uint16_t y_hardware_offset = 20; // 20 pixels for a 240x280 display
 
-	// --- THIS IS THE KEY MODIFICATION ---
-	// For Waveshare 1.69inch 170x320, a common X-offset is 35 pixels.
-	// This shifts our drawing origin to the correct visible area on the panel.
-	uint16_t y_hardware_offset = 20; // Start with 35. Some panels use 50.
+    // No X-offset for 240-width displays
+    // uint16_t x_hardware_offset = 0; // Or remove this line if it was added for 170x320
+    // x0 += x_hardware_offset;
+    // x1 += x_hardware_offset;
 
-	y0 += y_hardware_offset;
-	y1 += y_hardware_offset;
-	// --- END OF KEY MODIFICATION ---
+    y0 += y_hardware_offset;
+    y1 += y_hardware_offset;
+    // --- END OF KEY MODIFICATION ---
 
     uint8_t data[4];
 
@@ -192,35 +191,52 @@ void ST7789_DrawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t co
     }
 }
 
-void ST7789_DrawChar(int16_t x, int16_t y, unsigned char c, const FontDef_t *font, uint16_t color, uint16_t bgcolor) {
-    if ((x >= ST7789_WIDTH) || (y >= ST7789_HEIGHT) ||
-        ((x + font->width) < 0) || ((y + font->height) < 0))
+void ST7789_DrawChar(int16_t x, int16_t y, char ch, const FontDef_t *font, uint16_t color, uint16_t background_color) {
+    if ((ch < font->firstChar) || (ch > font->lastChar)) {
+        // Character out of range, draw a blank rectangle (or a question mark, etc.)
+        ST7789_FillRectangle(x, y, font->width, font->height, background_color);
         return;
+    }
 
-    uint8_t i, j;
-    const uint8_t *glyph = &font->data[(c - font->firstChar) * font->width * ((font->height + 7) / 8)];
+    uint8_t char_index = ch - font->firstChar;
+    uint8_t bytes_per_column = 1; // Correct for 8-pixel height
+    uint32_t char_block_size = font->width * bytes_per_column; // Correct: 8 bytes for 8x8
+    uint32_t char_offset = char_index * char_block_size; // Correct
 
-    for (i = 0; i < font->width; i++) {
-        uint8_t line_data = 0;
-        for (j = 0; j < font->height; j++) {
-            if (font->height <= 8) { // 1 byte per column
-                line_data = glyph[i];
-                if (((line_data >> j) & 0x01) == 0x01) {
-                    ST7789_DrawPixel(x + i, y + j, color);
-                } else {
-                    ST7789_DrawPixel(x + i, y + j, bgcolor);
-                }
-            } else { // Multiple bytes per column (for taller fonts)
-                uint8_t byte_idx = j / 8;
-                uint8_t bit_idx = j % 8;
-                line_data = glyph[i + byte_idx * font->width];
-                if (((line_data >> bit_idx) & 0x01) == 0x01) {
-                    ST7789_DrawPixel(x + i, y + j, color);
-                } else {
-                    ST7789_DrawPixel(x + i, y + j, bgcolor);
+    // Loop through the columns (X-axis) of the character
+    for (uint8_t col = 0; col < font->width; col++) {
+        uint8_t pixel_column_data = font->data[char_offset + col];
+
+        // Loop through the 8 bits (Y-axis pixels) within this column byte
+        for (uint8_t bit = 0; bit < 8; bit++) {
+            // Calculate the actual pixel Y coordinate on the screen.
+            // LSB (bit 0) corresponds to the bottom pixel of the char (y + height - 1).
+            // MSB (bit 7) corresponds to the top pixel of the char (y + 0).
+            int16_t current_pixel_y = y + (font->height - 1 - bit);
+
+            // Check if the current bit (pixel) is set
+            if ((pixel_column_data >> bit) & 0x01) { // Check if the bit is set
+                ST7789_DrawPixel(x + col, current_pixel_y, color);
+            } else {
+                // Draw background only if distinct and explicitly desired
+                if (background_color != color) {
+                    ST7789_DrawPixel(x + col, current_pixel_y, background_color);
                 }
             }
         }
+    }
+}
+
+void ST7789_DrawString(int16_t x, int16_t y, const char* str, const FontDef_t *font, uint16_t color, uint16_t background_color) {
+    while (*str) { // Loop until the null-terminator character '\0' is reached
+        // Draw the current character
+        ST7789_DrawChar(x, y, *str, font, color, background_color);
+
+        // Advance the X position for the next character
+        x += font->width;
+
+        // Move to the next character in the string
+        str++;
     }
 }
 
