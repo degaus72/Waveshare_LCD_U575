@@ -14,10 +14,9 @@ typedef struct {
     uint8_t lastChar;       // ASCII value of the last character in the font data
 } FontDef_t;
 
-// Declare the 8x8 Basic Font
-extern const FontDef_t Font_8x8_Basic;
-
 // Declare the raw data array for the 8x8 Basic Font
-extern const uint8_t Font_8x8_Basic_data[];
+extern const FontDef_t Font_7x11;
+extern const FontDef_t Font_8x14;
+extern const FontDef_t Font_9x19;
 
 #endif /* INC_FONTS_H_ */

@@ -9,10 +9,10 @@
 ../Core/Src/st7789.c:149:6:ST7789_FillRectangle	6
 ../Core/Src/st7789.c:172:6:ST7789_DrawRectangle	1
 ../Core/Src/st7789.c:180:6:ST7789_DrawLine	8
-../Core/Src/st7789.c:194:6:ST7789_DrawChar	7
-../Core/Src/st7789.c:230:6:ST7789_DrawString	2
-../Core/Src/st7789.c:243:6:ST7789_WriteString	4
-../Core/Src/st7789.c:255:6:ST7789_SetRotation	5
-../Core/Src/st7789.c:281:6:ST7789_DisplayOn	1
-../Core/Src/st7789.c:285:6:ST7789_DisplayOff	1
-../Core/Src/st7789.c:289:6:ST7789_SetBacklight	2
+../Core/Src/st7789.c:195:6:ST7789_DrawChar	7
+../Core/Src/st7789.c:238:6:ST7789_DrawString	2
+../Core/Src/st7789.c:251:6:ST7789_WriteString	4
+../Core/Src/st7789.c:263:6:ST7789_SetRotation	5
+../Core/Src/st7789.c:289:6:ST7789_DisplayOn	1
+../Core/Src/st7789.c:293:6:ST7789_DisplayOff	1
+../Core/Src/st7789.c:297:6:ST7789_SetBacklight	2

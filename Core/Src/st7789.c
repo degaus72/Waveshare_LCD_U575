@@ -191,40 +191,48 @@ void ST7789_DrawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t co
     }
 }
 
+// ** NEW ST7789_DrawChar for 7x11 Row-Major, MSB-Left Font **
 void ST7789_DrawChar(int16_t x, int16_t y, char ch, const FontDef_t *font, uint16_t color, uint16_t background_color) {
     if ((ch < font->firstChar) || (ch > font->lastChar)) {
-        // Character out of range, draw a blank rectangle (or a question mark, etc.)
         ST7789_FillRectangle(x, y, font->width, font->height, background_color);
         return;
     }
 
     uint8_t char_index = ch - font->firstChar;
-    uint8_t bytes_per_column = 1; // Correct for 8-pixel height
-    uint32_t char_block_size = font->width * bytes_per_column; // Correct: 8 bytes for 8x8
-    uint32_t char_offset = char_index * char_block_size; // Correct
+    // For a Row-Major font, each character occupies `font->height` bytes in the data array.
+    uint32_t char_block_size = font->height; // Each character is 11 bytes for 7x11 font
+    uint32_t char_offset = char_index * char_block_size;
 
-    // Loop through the columns (X-axis) of the character
-    for (uint8_t col = 0; col < font->width; col++) {
-        uint8_t pixel_column_data = font->data[char_offset + col];
+    printf("\r\n--- Drawing Char '%c' (ASCII %d) at screen_xy=(%d, %d) ---\r\n", ch, ch, x, y);
+    printf("Font Properties: width=%d, height=%d, firstChar=%d, lastChar=%d\r\n", font->width, font->height, font->firstChar, font->lastChar);
+    printf("Char Offset in data array: %lu\r\n", char_offset);
 
-        // Loop through the 8 bits (Y-axis pixels) within this column byte
-        for (uint8_t bit = 0; bit < 8; bit++) {
-            // Calculate the actual pixel Y coordinate on the screen.
-            // LSB (bit 0) corresponds to the bottom pixel of the char (y + height - 1).
-            // MSB (bit 7) corresponds to the top pixel of the char (y + 0).
-            int16_t current_pixel_y = y + (font->height - 1 - bit);
+    // Loop through the rows (Y-axis) of the character
+    for (uint8_t row = 0; row < font->height; row++) { // row goes 0 to 10 for 11 pixels height
+        uint8_t pixel_row_data = font->data[char_offset + row]; // Get the byte for the current row
+        printf("  Row %d (relative y=%d), Raw Byte: 0x%02X\r\n", row, y + row, pixel_row_data);
 
-            // Check if the current bit (pixel) is set
-            if ((pixel_column_data >> bit) & 0x01) { // Check if the bit is set
-                ST7789_DrawPixel(x + col, current_pixel_y, color);
+        // Loop through the active bits (X-axis pixels) within this row byte.
+        // Assuming MSB (bit 7) is the leftmost pixel (X=0) and subsequent bits move right.
+        // The font is 7 pixels wide, so bit 0 is likely unused.
+        for (uint8_t bit = 0; bit < font->width; bit++) { // bit goes 0 to 6 for 7 pixels width
+            // To get the bit corresponding to X=0 (leftmost) when `bit` is 0,
+            // we need to access `bit 7` of the byte.
+            // When `bit` is 1 (X=1), we need `bit 6` of the byte, and so on.
+            // So, the bit index in the byte is `(7 - bit)`.
+            if ((pixel_row_data >> (7 - bit)) & 0x01) { // Check if the bit is set
+                ST7789_DrawPixel(x + bit, y + row, color); // x+bit for horizontal, y+row for vertical
+                printf("    Pixel ON: screen_xy=(%d, %d), font_bit_idx=%d (maps to X+%d)\r\n",
+                       x + bit, y + row, (7 - bit), bit);
             } else {
-                // Draw background only if distinct and explicitly desired
                 if (background_color != color) {
-                    ST7789_DrawPixel(x + col, current_pixel_y, background_color);
+                    ST7789_DrawPixel(x + bit, y + row, background_color);
+                    // printf("    Pixel OFF: screen_xy=(%d, %d), font_bit_idx=%d\r\n", x + bit, y + row, (7-bit)); // Uncomment for more verbose OFF pixel debugging
                 }
             }
         }
     }
+    printf("--- End Char '%c' ---\r\n", ch);
 }
 
 void ST7789_DrawString(int16_t x, int16_t y, const char* str, const FontDef_t *font, uint16_t color, uint16_t background_color) {

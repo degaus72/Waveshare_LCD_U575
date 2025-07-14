@@ -128,32 +128,13 @@ int main(void)
   ST7789_FillScreen(ST7789_BLACK); // Clear the screen
   HAL_Delay(500);
 
-  // Test 1: Draw a single pixel in the corner
-  ST7789_DrawPixel(30, 30, ST7789_RED);
-  HAL_Delay(500);
-
-  // Test 2: Draw a red rectangle (e.g., 20x20 pixels)
-  ST7789_FillRectangle(50, 50, 20, 20, ST7789_RED);
-  HAL_Delay(500);
-
-  // Test 3: Draw a horizontal line
-  ST7789_DrawLine(0, 50, ST7789_WIDTH - 1, 50, ST7789_GREEN);
-  HAL_Delay(500);
-
-  // Test 4: Draw a vertical line
-  ST7789_DrawLine(50, 0, 50, ST7789_HEIGHT - 1, ST7789_YELLOW);
-  HAL_Delay(500);
-
   CST816T_Init(&hi2c1); // Initialize the touch controller
 
-
   // Initial screen setup
-  ST7789_FillScreen(ST7789_BLACK);
-  HAL_Delay(500);
-//  ST7789_WriteString(10, 10, "Hello, Gemini!", &Font_16x26, ST7789_WHITE, ST7789_BLUE);
-  ST7789_DrawString(50, 100, "ABC!", &Font_8x8_Basic, ST7789_WHITE, ST7789_BLACK);
-//  ST7789_WriteString(10, 60, "Waveshare 1.69inch LCD", &Font_11x18, ST7789_YELLOW, ST7789_RED);
-//  ST7789_WriteString(10, 90, "Touch and Display Demo", &Font_7x10, ST7789_CYAN, ST7789_BLUE);
+  ST7789_DrawString(10, 10, "Hello, Gemini!", &Font_8x14, ST7789_WHITE, ST7789_BLUE);
+  ST7789_DrawString(10, 40, "STM32 NUCLEO-U575ZI-Q", &Font_7x11, ST7789_WHITE, ST7789_BLUE);
+  ST7789_DrawString(10, 60, "Waveshare 1.69inch LCD", &Font_9x19, ST7789_GREENYELLOW, ST7789_BLUE);
+  ST7789_DrawString(10, 90, "Touch and Display Demo", &Font_7x11, ST7789_CYAN, ST7789_BLUE);
 
   char buffer[50];
   int touch_display_y = 150; // Y position to display touch coordinates
@@ -190,23 +171,23 @@ int main(void)
 			  if (CST816T_ReadTouch(&touch_state)) {
 				  if (touch_state.touch_detected) {
 					  // Clear previous touch info
-					  ST7789_FillRectangle(0, touch_display_y, ST7789_WIDTH, Font_8x8_Basic.height * 2 + 10, ST7789_BLUE);
+					  ST7789_FillRectangle(0, touch_display_y, ST7789_WIDTH, Font_7x11.height * 2 + 10, ST7789_BLUE);
 
 					  // Display touch coordinates
 					  sprintf(buffer, "X: %03d Y: %03d", touch_state.x, touch_state.y);
-					  ST7789_WriteString(10, touch_display_y, buffer, &Font_8x8_Basic, ST7789_WHITE, ST7789_BLUE);
+					  ST7789_WriteString(10, touch_display_y, buffer, &Font_7x11, ST7789_WHITE, ST7789_BLUE);
 
 					  // Display gesture (if any)
 					  // You can decode gesture_id (e.g., 0x01=Tap, 0x02=Swipe Up, etc. - check CST816T datasheet)
 					  sprintf(buffer, "Gesture: 0x%02X", touch_state.gesture_id);
-					  ST7789_WriteString(10, touch_display_y + Font_8x8_Basic.height + 5, buffer, &Font_8x8_Basic, ST7789_ORANGE, ST7789_BLUE);
+					  ST7789_WriteString(10, touch_display_y + Font_7x11.height + 5, buffer, &Font_7x11, ST7789_ORANGE, ST7789_BLUE);
 
 					  // Optionally, draw a circle at the touch point
 					  ST7789_FillRectangle(touch_state.x - 2, touch_state.y - 2, 5, 5, ST7789_RED);
 				  } else {
 					  // No touch detected, clear touch info after release
-					  ST7789_FillRectangle(0, touch_display_y, ST7789_WIDTH, Font_8x8_Basic.height * 2 + 10, ST7789_BLUE);
-					  ST7789_WriteString(10, touch_display_y, "No Touch", &Font_8x8_Basic, ST7789_WHITE, ST7789_BLUE);
+					  ST7789_FillRectangle(0, touch_display_y, ST7789_WIDTH, Font_7x11.height * 2 + 10, ST7789_BLUE);
+					  ST7789_WriteString(10, touch_display_y, "No Touch", &Font_7x11, ST7789_WHITE, ST7789_BLUE);
 				  }
 			  }
 		  }
