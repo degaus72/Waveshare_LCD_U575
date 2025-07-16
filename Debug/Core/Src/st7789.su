@@ -9,10 +9,10 @@
 ../Core/Src/st7789.c:149:6:ST7789_FillRectangle	32	static
 ../Core/Src/st7789.c:172:6:ST7789_DrawRectangle	32	static
 ../Core/Src/st7789.c:180:6:ST7789_DrawLine	40	static
-../Core/Src/st7789.c:195:6:ST7789_DrawChar	56	static
-../Core/Src/st7789.c:238:6:ST7789_DrawString	32	static
-../Core/Src/st7789.c:251:6:ST7789_WriteString	32	static
-../Core/Src/st7789.c:263:6:ST7789_SetRotation	24	static
-../Core/Src/st7789.c:289:6:ST7789_DisplayOn	8	static
-../Core/Src/st7789.c:293:6:ST7789_DisplayOff	8	static
-../Core/Src/st7789.c:297:6:ST7789_SetBacklight	16	static
+../Core/Src/st7789.c:195:6:ST7789_DrawChar	72	static
+../Core/Src/st7789.c:256:6:ST7789_DrawString	32	static
+../Core/Src/st7789.c:269:6:ST7789_WriteString	32	static
+../Core/Src/st7789.c:281:6:ST7789_SetRotation	24	static
+../Core/Src/st7789.c:307:6:ST7789_DisplayOn	8	static
+../Core/Src/st7789.c:311:6:ST7789_DisplayOff	8	static
+../Core/Src/st7789.c:315:6:ST7789_SetBacklight	16	static

@@ -1,10 +1,10 @@
 #ifndef ST7789_H
 #define ST7789_H
 
+#include <fonts.h> // Include font definitions
 #include "main.h" // For HAL types and configurations
 #include "spi.h"  // For SPI handle
 #include "gpio.h" // For GPIO control
-#include "fonts.h" // Include font definitions
 
 // --- Pin Definitions (Adjust based on your CubeIDE configuration) ---
 #define ST7789_DC_GPIO_Port     GPIOB
@@ -82,16 +82,20 @@
 #define ST7789_GMCTRP1      0xE0
 #define ST7789_GMCTRN1      0xE1
 
+#define FONT_START_ASCII 32
+#define FONT_END_ASCII 126
+#define FONT_TOTAL_CHARS (FONT_END_ASCII - FONT_START_ASCII + 1) // This calculates 95
+
 // --- Function Prototypes ---
 void ST7789_Init(SPI_HandleTypeDef *hspi);
 void ST7789_FillScreen(uint16_t color);
 void ST7789_DrawPixel(int16_t x, int16_t y, uint16_t color);
 void ST7789_DrawRectangle(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
 void ST7789_DrawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color);
-void ST7789_DrawChar(int16_t x, int16_t y, char ch, const FontDef_t *font, uint16_t color, uint16_t background_color);
-void ST7789_DrawString(int16_t x, int16_t y, const char* str, const FontDef_t *font, uint16_t color, uint16_t background_color);
+void ST7789_DrawChar(int16_t x, int16_t y, char ch, const sFONT *font, uint16_t color, uint16_t background_color);
+void ST7789_DrawString(int16_t x, int16_t y, const char* str, const sFONT *font, uint16_t color, uint16_t background_color);
 void ST7789_FillRectangle(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
-void ST7789_WriteString(int16_t x, int16_t y, const char* str, const FontDef_t *font, uint16_t color, uint16_t bgcolor);
+void ST7789_WriteString(int16_t x, int16_t y, const char* str, const sFONT *font, uint16_t color, uint16_t bgcolor);
 void ST7789_SetRotation(uint8_t m); // 0, 1, 2, 3 for 0, 90, 180, 270 degrees
 void ST7789_DisplayOn(void);
 void ST7789_DisplayOff(void);

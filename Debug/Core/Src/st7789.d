@@ -1,5 +1,6 @@
 Core/Src/st7789.o: ../Core/Src/st7789.c ../Core/Inc/st7789.h \
- ../Core/Inc/main.h ../Drivers/STM32U5xx_HAL_Driver/Inc/stm32u5xx_hal.h \
+ ../Core/Inc/fonts.h ../Core/Inc/main.h \
+ ../Drivers/STM32U5xx_HAL_Driver/Inc/stm32u5xx_hal.h \
  ../Core/Inc/stm32u5xx_hal_conf.h \
  ../Drivers/STM32U5xx_HAL_Driver/Inc/stm32u5xx_hal_rcc.h \
  ../Drivers/STM32U5xx_HAL_Driver/Inc/stm32u5xx_hal_def.h \
@@ -35,8 +36,9 @@ Core/Src/st7789.o: ../Core/Src/st7789.c ../Core/Inc/st7789.h \
  ../Drivers/BSP/STM32U5xx_Nucleo/stm32u5xx_nucleo.h \
  ../Core/Inc/stm32u5xx_nucleo_conf.h \
  ../Drivers/BSP/STM32U5xx_Nucleo/stm32u5xx_nucleo_errno.h \
- ../Core/Inc/spi.h ../Core/Inc/gpio.h ../Core/Inc/fonts.h
+ ../Core/Inc/spi.h ../Core/Inc/gpio.h
 ../Core/Inc/st7789.h:
+../Core/Inc/fonts.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32U5xx_HAL_Driver/Inc/stm32u5xx_hal.h:
 ../Core/Inc/stm32u5xx_hal_conf.h:
@@ -76,4 +78,3 @@ Core/Src/st7789.o: ../Core/Src/st7789.c ../Core/Inc/st7789.h \
 ../Drivers/BSP/STM32U5xx_Nucleo/stm32u5xx_nucleo_errno.h:
 ../Core/Inc/spi.h:
 ../Core/Inc/gpio.h:
-../Core/Inc/fonts.h:

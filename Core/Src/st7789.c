@@ -191,72 +191,90 @@ void ST7789_DrawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t co
     }
 }
 
-// ** NEW ST7789_DrawChar for 7x11 Row-Major, MSB-Left Font **
-void ST7789_DrawChar(int16_t x, int16_t y, char ch, const FontDef_t *font, uint16_t color, uint16_t background_color) {
-    if ((ch < font->firstChar) || (ch > font->lastChar)) {
-        ST7789_FillRectangle(x, y, font->width, font->height, background_color);
+// Corrected ST7789_DrawChar in st7789.c
+void ST7789_DrawChar(int16_t x, int16_t y, char ch, const sFONT *font, uint16_t color, uint16_t background_color) {
+
+    // Calculate bytes per character
+    uint16_t bytes_per_row = (font->Width + 7) / 8;
+    uint16_t bytes_per_char = bytes_per_row * font->Height;
+
+    // Check if ch is within the font's supported range
+    if (ch < FONT_START_ASCII || ch > FONT_END_ASCII) {
+        // You can choose to draw a blank space for unsupported characters
+        // Or draw a specific placeholder character like '?'
+        // For now, let's just draw a blank rectangle (using background_color)
+        ST7789_FillRectangle(x, y, font->Width, font->Height, background_color);
         return;
     }
 
-    uint8_t char_index = ch - font->firstChar;
-    // For a Row-Major font, each character occupies `font->height` bytes in the data array.
-    uint32_t char_block_size = font->height; // Each character is 11 bytes for 7x11 font
-    uint32_t char_offset = char_index * char_block_size;
+    uint16_t char_index = ch - FONT_START_ASCII;
 
-    printf("\r\n--- Drawing Char '%c' (ASCII %d) at screen_xy=(%d, %d) ---\r\n", ch, ch, x, y);
-    printf("Font Properties: width=%d, height=%d, firstChar=%d, lastChar=%d\r\n", font->width, font->height, font->firstChar, font->lastChar);
-    printf("Char Offset in data array: %lu\r\n", char_offset);
+    // Get a pointer to the start of the character's data
+    const uint8_t *char_data = font->table + (char_index * bytes_per_char);
 
-    // Loop through the rows (Y-axis) of the character
-    for (uint8_t row = 0; row < font->height; row++) { // row goes 0 to 10 for 11 pixels height
-        uint8_t pixel_row_data = font->data[char_offset + row]; // Get the byte for the current row
-        printf("  Row %d (relative y=%d), Raw Byte: 0x%02X\r\n", row, y + row, pixel_row_data);
+    // Draw the character
+    for (int y_px = 0; y_px < font->Height; y_px++) {
+		for (int x_byte = 0; x_byte < bytes_per_row; x_byte++) {
+			// Get the byte of data for the current row and 8-pixel segment
+			uint8_t byte_data = char_data[y_px * bytes_per_row + x_byte];
 
-        // Loop through the active bits (X-axis pixels) within this row byte.
-        // Assuming MSB (bit 7) is the leftmost pixel (X=0) and subsequent bits move right.
-        // The font is 7 pixels wide, so bit 0 is likely unused.
-        for (uint8_t bit = 0; bit < font->width; bit++) { // bit goes 0 to 6 for 7 pixels width
-            // To get the bit corresponding to X=0 (leftmost) when `bit` is 0,
-            // we need to access `bit 7` of the byte.
-            // When `bit` is 1 (X=1), we need `bit 6` of the byte, and so on.
-            // So, the bit index in the byte is `(7 - bit)`.
-            if ((pixel_row_data >> (7 - bit)) & 0x01) { // Check if the bit is set
-                ST7789_DrawPixel(x + bit, y + row, color); // x+bit for horizontal, y+row for vertical
-                printf("    Pixel ON: screen_xy=(%d, %d), font_bit_idx=%d (maps to X+%d)\r\n",
-                       x + bit, y + row, (7 - bit), bit);
-            } else {
-                if (background_color != color) {
-                    ST7789_DrawPixel(x + bit, y + row, background_color);
-                    // printf("    Pixel OFF: screen_xy=(%d, %d), font_bit_idx=%d\r\n", x + bit, y + row, (7-bit)); // Uncomment for more verbose OFF pixel debugging
-                }
-            }
-        }
-    }
-    printf("--- End Char '%c' ---\r\n", ch);
+			// Iterate through the 8 bits of the current byte
+			for (int x_bit = 0; x_bit < 8; x_bit++) {
+				// Calculate the absolute X coordinate on the display for the current pixel
+				// x: starting X for the character
+				// (x_byte * 8): offset for the current 8-bit segment
+				// x_bit: offset for the current pixel within the 8-bit segment (0 for leftmost, 7 for rightmost)
+				int16_t current_x = x + (x_byte * 8) + x_bit;
+
+				// Calculate the relative X coordinate within the character's full bitmap
+				// This is used for boundary checking against font->Width
+				int16_t char_pixel_offset_x = (x_byte * 8) + x_bit;
+
+				// Only draw if this pixel is within the defined width of the character
+				if (char_pixel_offset_x < font->Width) {
+					// Extract the bit from byte_data
+					// If font data is MSB-first: bit 7 is leftmost, bit 0 is rightmost.
+					// To plot left-to-right (x_bit=0 -> leftmost), we need to extract from MSB (7-x_bit)
+					// Example:
+					// x_bit=0 (leftmost pixel) -> (byte_data >> 7) & 0x01 (reads MSB)
+					// x_bit=1                  -> (byte_data >> 6) & 0x01
+					// ...
+					// x_bit=7 (rightmost pixel) -> (byte_data >> 0) & 0x01 (reads LSB)
+					if ((byte_data >> (7 - x_bit)) & 0x01) { // This is the common MSB-first extraction
+						ST7789_DrawPixel(current_x, y + y_px, color);
+					} else {
+						if (background_color != color) {
+							ST7789_DrawPixel(current_x, y + y_px, background_color);
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
-void ST7789_DrawString(int16_t x, int16_t y, const char* str, const FontDef_t *font, uint16_t color, uint16_t background_color) {
+void ST7789_DrawString(int16_t x, int16_t y, const char* str, const sFONT *font, uint16_t color, uint16_t background_color) {
     while (*str) { // Loop until the null-terminator character '\0' is reached
         // Draw the current character
         ST7789_DrawChar(x, y, *str, font, color, background_color);
 
         // Advance the X position for the next character
-        x += font->width;
+        x += font->Width;
 
         // Move to the next character in the string
         str++;
     }
 }
 
-void ST7789_WriteString(int16_t x, int16_t y, const char* str, const FontDef_t *font, uint16_t color, uint16_t bgcolor) {
+void ST7789_WriteString(int16_t x, int16_t y, const char* str, const sFONT *font, uint16_t color, uint16_t bgcolor) {
     while (*str) {
-        if (x + font->width >= ST7789_WIDTH) { // Wrap text if it exceeds screen width
+        if (x + font->Width >= ST7789_WIDTH) { // Wrap text if it exceeds screen width
             x = 0;
-            y += font->height;
-            if (y + font->height >= ST7789_HEIGHT) break; // Don't draw if going off screen
+            y += font->Height;
+            if (y + font->Height >= ST7789_HEIGHT) break; // Don't draw if going off screen
         }
         ST7789_DrawChar(x, y, *str++, font, color, bgcolor);
-        x += font->width;
+        x += font->Width;
     }
 }
 

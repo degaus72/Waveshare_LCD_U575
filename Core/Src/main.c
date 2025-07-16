@@ -21,6 +21,7 @@
 #include "i2c.h"
 #include "icache.h"
 #include "spi.h"
+#include "tim.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -30,6 +31,7 @@
 #include "stdio.h"
 #include "stdbool.h"
 #include "st7789.h"
+#include "dht11.h"
 
 /* USER CODE END Includes */
 
@@ -70,21 +72,6 @@ static void SystemPower_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-// Retarget printf to ITM/SWO for debugging if you have it set up.
-// Or define a simple print function using UART.
-// For simplicity in this example, we'll avoid printf to keep it focused.
-
-// For the EXTI callback, you need to add this to stm32g4xx_it.c (or u5xx_it.c for U5 series)
-// Find the HAL_GPIO_EXTI_Callback function and add:
-/*
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-  if (GPIO_Pin == CST816T_INT_Pin) // Check if it's the touch interrupt pin
-  {
-    CST816T_INT_EXTI_Callback();
-  }
-}
-*/
 
 /* USER CODE END 0 */
 
@@ -122,22 +109,42 @@ int main(void)
   MX_GPIO_Init();
   MX_ICACHE_Init();
   MX_SPI1_Init();
+  MX_TIM2_Init();
   MX_I2C1_Init();
+
   /* USER CODE BEGIN 2 */
-  ST7789_Init(&hspi1); // Initialize the display
-  ST7789_FillScreen(ST7789_BLACK); // Clear the screen
+
+
+
+  // Initialize the display
+  ST7789_Init(&hspi1);
+
+  // Clear the screen
+  ST7789_FillScreen(ST7789_BLUE);
   HAL_Delay(500);
 
-  CST816T_Init(&hi2c1); // Initialize the touch controller
+//  CST816T_Init(&hi2c1); // Initialize the touch controller
 
   // Initial screen setup
-  ST7789_DrawString(10, 10, "Hello, Gemini!", &Font_8x14, ST7789_WHITE, ST7789_BLACK);
-  ST7789_DrawString(10, 40, "STM32 NUCLEO-U575ZI-Q", &Font_7x11, ST7789_WHITE, ST7789_BLACK);
-  ST7789_DrawString(10, 60, "Waveshare 1.69inch LCD", &Font_8x14, ST7789_WHITE, ST7789_BLACK);
-  ST7789_DrawString(10, 90, "Touch and Display Demo", &Font_7x11, ST7789_WHITE, ST7789_BLACK);
+//  ST7789_DrawString(30, 10, "Hello, Gemini AI!", &Font16, ST7789_WHITE, ST7789_BLACK);
+//  ST7789_DrawString(10, 40, "STM32 NUCLEO-U575ZI-Q", &Font20, ST7789_WHITE, ST7789_BLACK);
+//  ST7789_DrawString(10, 60, "Waveshare 1.69inch LCD", &Font16, ST7789_WHITE, ST7789_BLACK);
+//  ST7789_DrawString(10, 90, "Touch and Display Demo", &Font12, ST7789_WHITE, ST7789_BLACK);
 
-  char buffer[50];
-  int touch_display_y = 150; // Y position to display touch coordinates
+  // Draw some test text in a contrasting color
+  ST7789_WriteString(50, 50, "Hello LCD!", &Font16, ST7789_YELLOW, ST7789_BLACK);
+  ST7789_WriteString(50, 70, "Test 123", &Font12, ST7789_GREEN, ST7789_RED);
+  // --- END TEMPORARY DEBUGGING CODE ---
+
+//  char buffer[50];
+//  int touch_display_y = 150; // Y position to display touch coordinates
+
+  // Initialize the DHT11 module
+  DHT11_Init();
+
+  float temp = 0.0f;
+  float hum = 0.0f;
+  char display_buffer[50];
 
   /* USER CODE END 2 */
 
@@ -165,37 +172,56 @@ int main(void)
   while (1)
   {
 
-	// Check for touch event
-	  if (touch_event_pending) {
-			  touch_event_pending = false; // Clear the flag
-			  if (CST816T_ReadTouch(&touch_state)) {
-				  if (touch_state.touch_detected) {
-					  // Clear previous touch info
-					  ST7789_FillRectangle(0, touch_display_y, ST7789_WIDTH, Font_7x11.height * 2 + 10, ST7789_BLUE);
+//	// Check for touch event
+//	  if (touch_event_pending) {
+//			  touch_event_pending = false; // Clear the flag
+//			  if (CST816T_ReadTouch(&touch_state)) {
+//				  if (touch_state.touch_detected) {
+//					  // Clear previous touch info
+//					  ST7789_FillRectangle(0, touch_display_y, ST7789_WIDTH, Font12.Height * 2 + 10, ST7789_BLUE);
+//
+//					  // Display touch coordinates
+//					  sprintf(buffer, "X: %03d Y: %03d", touch_state.x, touch_state.y);
+//					  ST7789_WriteString(10, touch_display_y, buffer, &Font12, ST7789_WHITE, ST7789_BLUE);
+//
+//					  // Display gesture (if any)
+//					  // You can decode gesture_id (e.g., 0x01=Tap, 0x02=Swipe Up, etc. - check CST816T datasheet)
+//					  sprintf(buffer, "Gesture: 0x%02X", touch_state.gesture_id);
+//					  ST7789_WriteString(10, touch_display_y + Font12.Height + 5, buffer, &Font12, ST7789_ORANGE, ST7789_BLUE);
+//
+//					  // Optionally, draw a circle at the touch point
+//					  ST7789_FillRectangle(touch_state.x - 2, touch_state.y - 2, 5, 5, ST7789_RED);
+//				  } else {
+//					  // No touch detected, clear touch info after release
+//					  ST7789_FillRectangle(0, touch_display_y, ST7789_WIDTH, Font12.Height * 2 + 10, ST7789_BLUE);
+//					  ST7789_WriteString(10, touch_display_y, "No Touch", &Font12, ST7789_WHITE, ST7789_BLUE);
+//				  }
+//			  }
+//		  }
 
-					  // Display touch coordinates
-					  sprintf(buffer, "X: %03d Y: %03d", touch_state.x, touch_state.y);
-					  ST7789_WriteString(10, touch_display_y, buffer, &Font_7x11, ST7789_WHITE, ST7789_BLUE);
+	  /* DHT11 Main Loop */
+	  uint8_t dht_raw_bytes[5]; // Declare array to receive raw data
+	      if (DHT11_Read_Data(&temp, &hum, dht_raw_bytes) == 0) { // Pass the array
+	          // Data read successfully
 
-					  // Display gesture (if any)
-					  // You can decode gesture_id (e.g., 0x01=Tap, 0x02=Swipe Up, etc. - check CST816T datasheet)
-					  sprintf(buffer, "Gesture: 0x%02X", touch_state.gesture_id);
-					  ST7789_WriteString(10, touch_display_y + Font_7x11.height + 5, buffer, &Font_7x11, ST7789_ORANGE, ST7789_BLUE);
+	          // --- DEBUGGING: Display Raw Bytes ---
+	          sprintf(display_buffer, "Raw: %02X %02X %02X %02X %02X",
+	                  dht_raw_bytes[0], dht_raw_bytes[1], dht_raw_bytes[2], dht_raw_bytes[3], dht_raw_bytes[4]);
+	          ST7789_WriteString(10, 50, display_buffer, &Font12, ST7789_CYAN, ST7789_BLACK);
 
-					  // Optionally, draw a circle at the touch point
-					  ST7789_FillRectangle(touch_state.x - 2, touch_state.y - 2, 5, 5, ST7789_RED);
-				  } else {
-					  // No touch detected, clear touch info after release
-					  ST7789_FillRectangle(0, touch_display_y, ST7789_WIDTH, Font_7x11.height * 2 + 10, ST7789_BLUE);
-					  ST7789_WriteString(10, touch_display_y, "No Touch", &Font_7x11, ST7789_WHITE, ST7789_BLUE);
-				  }
-			  }
-		  }
-    /* USER CODE END WHILE */
+	          // --- Original Code to display Temp/Hum ---
+	          sprintf(display_buffer, "Temp: %.1f C", temp);
+	          ST7789_WriteString(10, 10, display_buffer, &Font16, ST7789_WHITE, ST7789_BLACK);
 
-    /* USER CODE BEGIN 3 */
-	HAL_Delay(10); // Small delay to prevent busy-waiting if no touch event
-  }
+	          sprintf(display_buffer, "Hum: %.1f %%", hum);
+	          ST7789_WriteString(10, 30, display_buffer, &Font16, ST7789_WHITE, ST7789_BLACK);
+
+	          HAL_Delay(2000); // Read every 2 seconds
+	      } else {
+	          // Error reading data
+	          ST7789_WriteString(10, 10, "DHT11 Error", &Font16, ST7789_RED, ST7789_BLACK);
+	          HAL_Delay(500); // Wait and retry
+	      }
   /* USER CODE END 3 */
 }
 
