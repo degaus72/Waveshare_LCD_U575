@@ -59,10 +59,10 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, DC_Pin|DHT11_DATA_PIN_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(BL_GPIO_Port, BL_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOB, BL_Pin|DHT11_DATA_PIN_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pins : RST_Pin TP_RST_Pin */
   GPIO_InitStruct.Pin = RST_Pin|TP_RST_Pin;

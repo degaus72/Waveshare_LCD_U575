@@ -1,5 +1,5 @@
-../Core/Src/dht11.c:13:6:Set_DHT11_Output	1
-../Core/Src/dht11.c:23:6:Set_DHT11_Input	1
-../Core/Src/dht11.c:34:6:Delay_us	2
-../Core/Src/dht11.c:42:6:DHT11_Init	1
-../Core/Src/dht11.c:52:9:DHT11_Read_Data	15
+../Core/Src/dht11.c:10:6:Set_DHT11_Output	1
+../Core/Src/dht11.c:20:6:Set_DHT11_Input	1
+../Core/Src/dht11.c:30:6:Delay_us	2
+../Core/Src/dht11.c:37:6:DHT11_Init	1
+../Core/Src/dht11.c:45:9:DHT11_Read_Data	16

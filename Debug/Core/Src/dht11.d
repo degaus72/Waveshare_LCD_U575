@@ -35,7 +35,8 @@ Core/Src/dht11.o: ../Core/Src/dht11.c ../Core/Inc/dht11.h \
  ../Drivers/BSP/STM32U5xx_Nucleo/stm32u5xx_nucleo.h \
  ../Core/Inc/stm32u5xx_nucleo_conf.h \
  ../Drivers/BSP/STM32U5xx_Nucleo/stm32u5xx_nucleo_errno.h \
- ../Core/Inc/tim.h
+ ../Core/Inc/tim.h ../Core/Inc/fonts.h ../Core/Inc/st7789.h \
+ ../Core/Inc/spi.h ../Core/Inc/gpio.h
 ../Core/Inc/dht11.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32U5xx_HAL_Driver/Inc/stm32u5xx_hal.h:
@@ -75,3 +76,7 @@ Core/Src/dht11.o: ../Core/Src/dht11.c ../Core/Inc/dht11.h \
 ../Core/Inc/stm32u5xx_nucleo_conf.h:
 ../Drivers/BSP/STM32U5xx_Nucleo/stm32u5xx_nucleo_errno.h:
 ../Core/Inc/tim.h:
+../Core/Inc/fonts.h:
+../Core/Inc/st7789.h:
+../Core/Inc/spi.h:
+../Core/Inc/gpio.h:

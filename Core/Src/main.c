@@ -111,16 +111,16 @@ int main(void)
   MX_SPI1_Init();
   MX_TIM2_Init();
   MX_I2C1_Init();
-
   /* USER CODE BEGIN 2 */
-
+  HAL_TIM_Base_Start(&htim2); // Start the timer once globally
 
 
   // Initialize the display
   ST7789_Init(&hspi1);
+  HAL_Delay(500);
 
   // Clear the screen
-  ST7789_FillScreen(ST7789_BLUE);
+  ST7789_FillScreen(ST7789_BLACK);
   HAL_Delay(500);
 
 //  CST816T_Init(&hi2c1); // Initialize the touch controller
@@ -132,8 +132,8 @@ int main(void)
 //  ST7789_DrawString(10, 90, "Touch and Display Demo", &Font12, ST7789_WHITE, ST7789_BLACK);
 
   // Draw some test text in a contrasting color
-  ST7789_WriteString(50, 50, "Hello LCD!", &Font16, ST7789_YELLOW, ST7789_BLACK);
-  ST7789_WriteString(50, 70, "Test 123", &Font12, ST7789_GREEN, ST7789_RED);
+//  ST7789_WriteString(50, 50, "Hello LCD!", &Font16, ST7789_YELLOW, ST7789_BLACK);
+//  ST7789_WriteString(50, 70, "Test 123", &Font12, ST7789_GREEN, ST7789_RED);
   // --- END TEMPORARY DEBUGGING CODE ---
 
 //  char buffer[50];
@@ -141,10 +141,11 @@ int main(void)
 
   // Initialize the DHT11 module
   DHT11_Init();
+  HAL_Delay(500);
 
-  float temp = 0.0f;
-  float hum = 0.0f;
-  char display_buffer[50];
+//  float temp = 0.0f;
+//  float hum = 0.0f;
+//  char display_buffer[50];
 
   /* USER CODE END 2 */
 
@@ -167,61 +168,47 @@ int main(void)
     Error_Handler();
   }
 
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
+  // In main.c, inside your while(1) loop:
   while (1)
   {
+    /* USER CODE BEGIN WHILE */
 
-//	// Check for touch event
-//	  if (touch_event_pending) {
-//			  touch_event_pending = false; // Clear the flag
-//			  if (CST816T_ReadTouch(&touch_state)) {
-//				  if (touch_state.touch_detected) {
-//					  // Clear previous touch info
-//					  ST7789_FillRectangle(0, touch_display_y, ST7789_WIDTH, Font12.Height * 2 + 10, ST7789_BLUE);
-//
-//					  // Display touch coordinates
-//					  sprintf(buffer, "X: %03d Y: %03d", touch_state.x, touch_state.y);
-//					  ST7789_WriteString(10, touch_display_y, buffer, &Font12, ST7789_WHITE, ST7789_BLUE);
-//
-//					  // Display gesture (if any)
-//					  // You can decode gesture_id (e.g., 0x01=Tap, 0x02=Swipe Up, etc. - check CST816T datasheet)
-//					  sprintf(buffer, "Gesture: 0x%02X", touch_state.gesture_id);
-//					  ST7789_WriteString(10, touch_display_y + Font12.Height + 5, buffer, &Font12, ST7789_ORANGE, ST7789_BLUE);
-//
-//					  // Optionally, draw a circle at the touch point
-//					  ST7789_FillRectangle(touch_state.x - 2, touch_state.y - 2, 5, 5, ST7789_RED);
-//				  } else {
-//					  // No touch detected, clear touch info after release
-//					  ST7789_FillRectangle(0, touch_display_y, ST7789_WIDTH, Font12.Height * 2 + 10, ST7789_BLUE);
-//					  ST7789_WriteString(10, touch_display_y, "No Touch", &Font12, ST7789_WHITE, ST7789_BLUE);
-//				  }
-//			  }
-//		  }
+    ST7789_FillScreen(ST7789_BLACK); // Clear the screen for a fresh update
 
-	  /* DHT11 Main Loop */
-	  uint8_t dht_raw_bytes[5]; // Declare array to receive raw data
-	      if (DHT11_Read_Data(&temp, &hum, dht_raw_bytes) == 0) { // Pass the array
-	          // Data read successfully
+    uint8_t dht_raw_bytes[5];
+    float temp = 0.0f;
+    float hum = 0.0f;
+    char display_buffer[50]; // Buffer for sprintf
 
-	          // --- DEBUGGING: Display Raw Bytes ---
-	          sprintf(display_buffer, "Raw: %02X %02X %02X %02X %02X",
-	                  dht_raw_bytes[0], dht_raw_bytes[1], dht_raw_bytes[2], dht_raw_bytes[3], dht_raw_bytes[4]);
-	          ST7789_WriteString(10, 50, display_buffer, &Font12, ST7789_CYAN, ST7789_BLACK);
+    // Attempt to read data from DHT11
+    if (DHT11_Read_Data(&temp, &hum, dht_raw_bytes) == 0) {
+        // --- DHT11 SUCCESS PATH ---
+        ST7789_WriteString(10, 10, "DHT11 SUCCESS", &Font16, ST7789_GREEN, ST7789_BLACK);
 
-	          // --- Original Code to display Temp/Hum ---
-	          sprintf(display_buffer, "Temp: %.1f C", temp);
-	          ST7789_WriteString(10, 10, display_buffer, &Font16, ST7789_WHITE, ST7789_BLACK);
+        // Display Raw Bytes
+        sprintf(display_buffer, "Raw: %02X %02X %02X %02X %02X",
+                dht_raw_bytes[0], dht_raw_bytes[1], dht_raw_bytes[2], dht_raw_bytes[3], dht_raw_bytes[4]);
+        ST7789_WriteString(10, 40, display_buffer, &Font12, ST7789_CYAN, ST7789_BLACK);
 
-	          sprintf(display_buffer, "Hum: %.1f %%", hum);
-	          ST7789_WriteString(10, 30, display_buffer, &Font16, ST7789_WHITE, ST7789_BLACK);
+        // Display Temperature
+        sprintf(display_buffer, "Temp: %.1f C", temp); // %.1f for one decimal place
+        ST7789_WriteString(10, 70, display_buffer, &Font16, ST7789_WHITE, ST7789_BLACK);
 
-	          HAL_Delay(2000); // Read every 2 seconds
-	      } else {
-	          // Error reading data
-	          ST7789_WriteString(10, 10, "DHT11 Error", &Font16, ST7789_RED, ST7789_BLACK);
-	          HAL_Delay(500); // Wait and retry
-	      }
+        // Display Humidity
+        sprintf(display_buffer, "Hum: %.1f %%", hum); // %.1f for one decimal place
+        ST7789_WriteString(10, 100, display_buffer, &Font16, ST7789_WHITE, ST7789_BLACK);
+
+        HAL_Delay(2000); // Wait 2 seconds before the next reading
+    } else {
+        // --- DHT11 ERROR PATH ---
+        ST7789_WriteString(10, 150, "DHT11 ERROR", &Font16, ST7789_RED, ST7789_BLACK);
+        ST7789_WriteString(10, 180, "Read Failed (Checksum/Timeout)", &Font12, ST7789_RED, ST7789_BLACK);
+        // Optional: Add a counter for consecutive errors if you want to track
+        HAL_Delay(500); // Short delay before retry on error
+    }
+    /* USER CODE END WHILE */
+    /* USER CODE BEGIN 3 */
+  }
   /* USER CODE END 3 */
 }
 
