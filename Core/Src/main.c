@@ -32,6 +32,7 @@
 #include "stdbool.h"
 #include "st7789.h"
 #include "dht11.h"
+#include "fonts.h"
 
 /* USER CODE END Includes */
 
@@ -83,7 +84,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+  HAL_TIM_Base_Start(&htim2);
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -112,40 +113,19 @@ int main(void)
   MX_TIM2_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-  HAL_TIM_Base_Start(&htim2); // Start the timer once globally
 
+  HAL_TIM_Base_Start(&htim2); // Start the timer for microsecond delays
 
-  // Initialize the display
-  ST7789_Init(&hspi1);
-  HAL_Delay(500);
-
-  // Clear the screen
+  ST7789_Init(&hspi1); // Initialize your LCD display
   ST7789_FillScreen(ST7789_BLACK);
-  HAL_Delay(500);
+  ST7789_WriteString(10, 10, "PB8 Toggle Test", &Font12, ST7789_WHITE, ST7789_BLACK);
+  HAL_Delay(1000);
 
 //  CST816T_Init(&hi2c1); // Initialize the touch controller
-
-  // Initial screen setup
-//  ST7789_DrawString(30, 10, "Hello, Gemini AI!", &Font16, ST7789_WHITE, ST7789_BLACK);
-//  ST7789_DrawString(10, 40, "STM32 NUCLEO-U575ZI-Q", &Font20, ST7789_WHITE, ST7789_BLACK);
-//  ST7789_DrawString(10, 60, "Waveshare 1.69inch LCD", &Font16, ST7789_WHITE, ST7789_BLACK);
-//  ST7789_DrawString(10, 90, "Touch and Display Demo", &Font12, ST7789_WHITE, ST7789_BLACK);
-
-  // Draw some test text in a contrasting color
-//  ST7789_WriteString(50, 50, "Hello LCD!", &Font16, ST7789_YELLOW, ST7789_BLACK);
-//  ST7789_WriteString(50, 70, "Test 123", &Font12, ST7789_GREEN, ST7789_RED);
-  // --- END TEMPORARY DEBUGGING CODE ---
 
 //  char buffer[50];
 //  int touch_display_y = 150; // Y position to display touch coordinates
 
-  // Initialize the DHT11 module
-  DHT11_Init();
-  HAL_Delay(500);
-
-//  float temp = 0.0f;
-//  float hum = 0.0f;
-//  char display_buffer[50];
 
   /* USER CODE END 2 */
 
@@ -168,47 +148,16 @@ int main(void)
     Error_Handler();
   }
 
-  // In main.c, inside your while(1) loop:
-  while (1)
-  {
-    /* USER CODE BEGIN WHILE */
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
 
-    ST7789_FillScreen(ST7789_BLACK); // Clear the screen for a fresh update
+    while (1)
+    {
 
-    uint8_t dht_raw_bytes[5];
-    float temp = 0.0f;
-    float hum = 0.0f;
-    char display_buffer[50]; // Buffer for sprintf
-
-    // Attempt to read data from DHT11
-    if (DHT11_Read_Data(&temp, &hum, dht_raw_bytes) == 0) {
-        // --- DHT11 SUCCESS PATH ---
-        ST7789_WriteString(10, 10, "DHT11 SUCCESS", &Font16, ST7789_GREEN, ST7789_BLACK);
-
-        // Display Raw Bytes
-        sprintf(display_buffer, "Raw: %02X %02X %02X %02X %02X",
-                dht_raw_bytes[0], dht_raw_bytes[1], dht_raw_bytes[2], dht_raw_bytes[3], dht_raw_bytes[4]);
-        ST7789_WriteString(10, 40, display_buffer, &Font12, ST7789_CYAN, ST7789_BLACK);
-
-        // Display Temperature
-        sprintf(display_buffer, "Temp: %.1f C", temp); // %.1f for one decimal place
-        ST7789_WriteString(10, 70, display_buffer, &Font16, ST7789_WHITE, ST7789_BLACK);
-
-        // Display Humidity
-        sprintf(display_buffer, "Hum: %.1f %%", hum); // %.1f for one decimal place
-        ST7789_WriteString(10, 100, display_buffer, &Font16, ST7789_WHITE, ST7789_BLACK);
-
-        HAL_Delay(2000); // Wait 2 seconds before the next reading
-    } else {
-        // --- DHT11 ERROR PATH ---
-        ST7789_WriteString(10, 150, "DHT11 ERROR", &Font16, ST7789_RED, ST7789_BLACK);
-        ST7789_WriteString(10, 180, "Read Failed (Checksum/Timeout)", &Font12, ST7789_RED, ST7789_BLACK);
-        // Optional: Add a counter for consecutive errors if you want to track
-        HAL_Delay(500); // Short delay before retry on error
-    }
     /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
-  }
+    }
   /* USER CODE END 3 */
 }
 
