@@ -26,7 +26,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-//#include "st7789.h"
 #include "cst816t.h"
 #include "stdio.h"
 #include "stdbool.h"
@@ -84,7 +83,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-  HAL_TIM_Base_Start(&htim2);
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -117,15 +116,12 @@ int main(void)
   HAL_TIM_Base_Start(&htim2); // Start the timer for microsecond delays
 
   ST7789_Init(&hspi1); // Initialize your LCD display
-  ST7789_FillScreen(ST7789_BLACK);
-  ST7789_WriteString(10, 10, "PB8 Toggle Test", &Font12, ST7789_WHITE, ST7789_BLACK);
-  HAL_Delay(1000);
 
-//  CST816T_Init(&hi2c1); // Initialize the touch controller
+  DHT11_Init(); // Initialize the DHT11 module
 
-//  char buffer[50];
-//  int touch_display_y = 150; // Y position to display touch coordinates
-
+  float temp = 0.0f;
+  float hum = 0.0f;
+  char display_buffer[50];
 
   /* USER CODE END 2 */
 
@@ -150,10 +146,25 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
     while (1)
     {
+		if (DHT11_Read_Data(&temp, &hum) == 0) {
+			// Data read successfully
+			// You can now display temp and hum on your ST7789 LCD
+			ST7789_WriteString(35, 50, "Temperature:", &Font20, ST7789_WHITE, ST7789_BLACK);
+			sprintf(display_buffer, "%.1f C", temp);
+			ST7789_WriteString(80, 80, display_buffer, &Font20, ST7789_WHITE, ST7789_BLACK);
 
+			ST7789_WriteString(55, 130, "Humidity:", &Font20, ST7789_WHITE, ST7789_BLACK);
+			sprintf(display_buffer, "%.1f %%", hum);
+			ST7789_WriteString(80, 160, display_buffer, &Font20, ST7789_WHITE, ST7789_BLACK);
+
+			HAL_Delay(2000); // Read every 2 seconds
+		} else {
+			// Error reading data
+			ST7789_WriteString(20, 20, "DHT11 Error", &Font24, ST7789_RED, ST7789_BLACK);
+			HAL_Delay(500); // Wait and retry
+			}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
