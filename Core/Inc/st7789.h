@@ -6,19 +6,6 @@
 #include "spi.h"  // For SPI handle
 #include "gpio.h" // For GPIO control
 
-// --- Pin Definitions (Adjust based on your CubeIDE configuration) ---
-#define ST7789_DC_GPIO_Port     GPIOB
-#define ST7789_DC_Pin           GPIO_PIN_0
-
-#define ST7789_RST_GPIO_Port    GPIOC
-#define ST7789_RST_Pin          GPIO_PIN_0
-
-#define ST7789_CS_GPIO_Port     GPIOA
-#define ST7789_CS_Pin           GPIO_PIN_4
-
-#define ST7789_BL_GPIO_Port     GPIOB
-#define ST7789_BL_Pin           GPIO_PIN_1
-
 // --- Display Dimensions ---
 #define ST7789_WIDTH  240
 #define ST7789_HEIGHT 280

@@ -302,13 +302,13 @@ Discarded input sections
  .debug_macro   0x00000000       0x16 ./Core/Src/cst816t.o
  .debug_macro   0x00000000      0x146 ./Core/Src/cst816t.o
  .debug_macro   0x00000000      0x12a ./Core/Src/cst816t.o
- .debug_macro   0x00000000       0x52 ./Core/Src/cst816t.o
+ .debug_macro   0x00000000       0x5e ./Core/Src/cst816t.o
  .debug_macro   0x00000000       0x52 ./Core/Src/cst816t.o
  .debug_macro   0x00000000       0x1c ./Core/Src/cst816t.o
- .debug_macro   0x00000000      0x19c ./Core/Src/cst816t.o
+ .debug_macro   0x00000000      0x16c ./Core/Src/cst816t.o
  .debug_macro   0x00000000       0x22 ./Core/Src/cst816t.o
  .debug_line    0x00000000      0xa32 ./Core/Src/cst816t.o
- .debug_str     0x00000000   0x1441fd ./Core/Src/cst816t.o
+ .debug_str     0x00000000   0x14418c ./Core/Src/cst816t.o
  .comment       0x00000000       0x44 ./Core/Src/cst816t.o
  .debug_frame   0x00000000       0xa0 ./Core/Src/cst816t.o
  .ARM.attributes
@@ -458,7 +458,7 @@ Discarded input sections
  .debug_macro   0x00000000       0x16 ./Core/Src/dht11.o
  .debug_macro   0x00000000      0x146 ./Core/Src/dht11.o
  .debug_macro   0x00000000      0x12a ./Core/Src/dht11.o
- .debug_macro   0x00000000       0x52 ./Core/Src/dht11.o
+ .debug_macro   0x00000000       0x5e ./Core/Src/dht11.o
  .group         0x00000000        0xc ./Core/Src/font12.o
  .group         0x00000000        0xc ./Core/Src/font12.o
  .group         0x00000000        0xc ./Core/Src/font12.o
@@ -735,7 +735,7 @@ Discarded input sections
  .debug_macro   0x00000000       0x16 ./Core/Src/gpio.o
  .debug_macro   0x00000000      0x146 ./Core/Src/gpio.o
  .debug_macro   0x00000000      0x12a ./Core/Src/gpio.o
- .debug_macro   0x00000000       0x52 ./Core/Src/gpio.o
+ .debug_macro   0x00000000       0x5e ./Core/Src/gpio.o
  .group         0x00000000        0xc ./Core/Src/i2c.o
  .group         0x00000000        0xc ./Core/Src/i2c.o
  .group         0x00000000        0xc ./Core/Src/i2c.o
@@ -880,7 +880,7 @@ Discarded input sections
  .debug_macro   0x00000000       0x16 ./Core/Src/i2c.o
  .debug_macro   0x00000000      0x146 ./Core/Src/i2c.o
  .debug_macro   0x00000000      0x12a ./Core/Src/i2c.o
- .debug_macro   0x00000000       0x52 ./Core/Src/i2c.o
+ .debug_macro   0x00000000       0x5e ./Core/Src/i2c.o
  .group         0x00000000        0xc ./Core/Src/icache.o
  .group         0x00000000        0xc ./Core/Src/icache.o
  .group         0x00000000        0xc ./Core/Src/icache.o
@@ -1023,7 +1023,7 @@ Discarded input sections
  .debug_macro   0x00000000       0x16 ./Core/Src/icache.o
  .debug_macro   0x00000000      0x146 ./Core/Src/icache.o
  .debug_macro   0x00000000      0x12a ./Core/Src/icache.o
- .debug_macro   0x00000000       0x52 ./Core/Src/icache.o
+ .debug_macro   0x00000000       0x5e ./Core/Src/icache.o
  .group         0x00000000        0xc ./Core/Src/main.o
  .group         0x00000000        0xc ./Core/Src/main.o
  .group         0x00000000        0xc ./Core/Src/main.o
@@ -1173,11 +1173,11 @@ Discarded input sections
  .debug_macro   0x00000000       0x16 ./Core/Src/main.o
  .debug_macro   0x00000000      0x146 ./Core/Src/main.o
  .debug_macro   0x00000000      0x12a ./Core/Src/main.o
- .debug_macro   0x00000000       0x52 ./Core/Src/main.o
+ .debug_macro   0x00000000       0x5e ./Core/Src/main.o
  .debug_macro   0x00000000       0x52 ./Core/Src/main.o
  .debug_macro   0x00000000       0x22 ./Core/Src/main.o
  .debug_macro   0x00000000       0x1c ./Core/Src/main.o
- .debug_macro   0x00000000      0x19c ./Core/Src/main.o
+ .debug_macro   0x00000000      0x16c ./Core/Src/main.o
  .debug_macro   0x00000000       0x34 ./Core/Src/main.o
  .group         0x00000000        0xc ./Core/Src/spi.o
  .group         0x00000000        0xc ./Core/Src/spi.o
@@ -1323,7 +1323,7 @@ Discarded input sections
  .debug_macro   0x00000000       0x16 ./Core/Src/spi.o
  .debug_macro   0x00000000      0x146 ./Core/Src/spi.o
  .debug_macro   0x00000000      0x12a ./Core/Src/spi.o
- .debug_macro   0x00000000       0x52 ./Core/Src/spi.o
+ .debug_macro   0x00000000       0x5e ./Core/Src/spi.o
  .group         0x00000000        0xc ./Core/Src/st7789.o
  .group         0x00000000        0xc ./Core/Src/st7789.o
  .group         0x00000000        0xc ./Core/Src/st7789.o
@@ -1486,8 +1486,8 @@ Discarded input sections
  .debug_macro   0x00000000       0x16 ./Core/Src/st7789.o
  .debug_macro   0x00000000      0x146 ./Core/Src/st7789.o
  .debug_macro   0x00000000      0x12a ./Core/Src/st7789.o
- .debug_macro   0x00000000       0x52 ./Core/Src/st7789.o
- .debug_macro   0x00000000      0x19c ./Core/Src/st7789.o
+ .debug_macro   0x00000000       0x5e ./Core/Src/st7789.o
+ .debug_macro   0x00000000      0x16c ./Core/Src/st7789.o
  .group         0x00000000        0xc ./Core/Src/stm32u5xx_hal_msp.o
  .group         0x00000000        0xc ./Core/Src/stm32u5xx_hal_msp.o
  .group         0x00000000        0xc ./Core/Src/stm32u5xx_hal_msp.o
@@ -1630,7 +1630,7 @@ Discarded input sections
  .debug_macro   0x00000000       0x16 ./Core/Src/stm32u5xx_hal_msp.o
  .debug_macro   0x00000000      0x146 ./Core/Src/stm32u5xx_hal_msp.o
  .debug_macro   0x00000000      0x12a ./Core/Src/stm32u5xx_hal_msp.o
- .debug_macro   0x00000000       0x52 ./Core/Src/stm32u5xx_hal_msp.o
+ .debug_macro   0x00000000       0x5e ./Core/Src/stm32u5xx_hal_msp.o
  .group         0x00000000        0xc ./Core/Src/stm32u5xx_hal_timebase_tim.o
  .group         0x00000000        0xc ./Core/Src/stm32u5xx_hal_timebase_tim.o
  .group         0x00000000        0xc ./Core/Src/stm32u5xx_hal_timebase_tim.o
@@ -1903,7 +1903,7 @@ Discarded input sections
  .debug_macro   0x00000000       0x16 ./Core/Src/stm32u5xx_it.o
  .debug_macro   0x00000000      0x146 ./Core/Src/stm32u5xx_it.o
  .debug_macro   0x00000000      0x12a ./Core/Src/stm32u5xx_it.o
- .debug_macro   0x00000000       0x52 ./Core/Src/stm32u5xx_it.o
+ .debug_macro   0x00000000       0x5e ./Core/Src/stm32u5xx_it.o
  .debug_macro   0x00000000       0x52 ./Core/Src/stm32u5xx_it.o
  .group         0x00000000        0xc ./Core/Src/syscalls.o
  .group         0x00000000        0xc ./Core/Src/syscalls.o
@@ -2312,7 +2312,7 @@ Discarded input sections
  .debug_macro   0x00000000       0x16 ./Core/Src/tim.o
  .debug_macro   0x00000000      0x146 ./Core/Src/tim.o
  .debug_macro   0x00000000      0x12a ./Core/Src/tim.o
- .debug_macro   0x00000000       0x52 ./Core/Src/tim.o
+ .debug_macro   0x00000000       0x5e ./Core/Src/tim.o
  .text          0x00000000       0x14 ./Core/Startup/startup_stm32u575zitxq.o
  .data          0x00000000        0x0 ./Core/Startup/startup_stm32u575zitxq.o
  .bss           0x00000000        0x0 ./Core/Startup/startup_stm32u575zitxq.o
@@ -8919,22 +8919,22 @@ LOAD /Applications/STM32CubeIDE.app/Contents/Eclipse/plugins/com.st.stm32cube.id
 
 .debug_str      0x00000000   0x15170e
  .debug_str     0x00000000   0x15170e ./Core/Src/dht11.o
-                             0x143bbb (size before relaxing)
+                             0x143c18 (size before relaxing)
  .debug_str     0x0015170e     0x3e67 ./Core/Src/font20.o
  .debug_str     0x0015170e     0x3e67 ./Core/Src/font24.o
- .debug_str     0x0015170e   0x143cf2 ./Core/Src/gpio.o
- .debug_str     0x0015170e   0x14470c ./Core/Src/i2c.o
- .debug_str     0x0015170e   0x143335 ./Core/Src/icache.o
- .debug_str     0x0015170e   0x144b0c ./Core/Src/main.o
- .debug_str     0x0015170e   0x1447af ./Core/Src/spi.o
- .debug_str     0x0015170e   0x1443b9 ./Core/Src/st7789.o
- .debug_str     0x0015170e   0x14350d ./Core/Src/stm32u5xx_hal_msp.o
+ .debug_str     0x0015170e   0x143d4f ./Core/Src/gpio.o
+ .debug_str     0x0015170e   0x144769 ./Core/Src/i2c.o
+ .debug_str     0x0015170e   0x143392 ./Core/Src/icache.o
+ .debug_str     0x0015170e   0x144a9b ./Core/Src/main.o
+ .debug_str     0x0015170e   0x14480c ./Core/Src/spi.o
+ .debug_str     0x0015170e   0x144348 ./Core/Src/st7789.o
+ .debug_str     0x0015170e   0x14356a ./Core/Src/stm32u5xx_hal_msp.o
  .debug_str     0x0015170e   0x143450 ./Core/Src/stm32u5xx_hal_timebase_tim.o
- .debug_str     0x0015170e   0x144277 ./Core/Src/stm32u5xx_it.o
+ .debug_str     0x0015170e   0x1442d4 ./Core/Src/stm32u5xx_it.o
  .debug_str     0x0015170e     0x9a1f ./Core/Src/syscalls.o
  .debug_str     0x0015170e     0x77bd ./Core/Src/sysmem.o
  .debug_str     0x0015170e   0x1426ae ./Core/Src/system_stm32u5xx.o
- .debug_str     0x0015170e   0x143d33 ./Core/Src/tim.o
+ .debug_str     0x0015170e   0x143d90 ./Core/Src/tim.o
  .debug_str     0x0015170e       0x8e ./Core/Startup/startup_stm32u575zitxq.o
  .debug_str     0x0015170e   0x1447ba ./Drivers/BSP/STM32U5xx_Nucleo/stm32u5xx_nucleo.o
  .debug_str     0x0015170e   0x143524 ./Drivers/STM32U5xx_HAL_Driver/Src/stm32u5xx_hal.o
