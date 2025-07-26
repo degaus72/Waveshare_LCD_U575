@@ -1,5 +1,0 @@
-../Core/Src/main.c:82:5:main	3
-../Core/Src/main.c:179:6:SystemClock_Config	4
-../Core/Src/main.c:232:13:SystemPower_Config	2
-../Core/Src/main.c:264:6:HAL_TIM_PeriodElapsedCallback	2
-../Core/Src/main.c:282:6:Error_Handler	1

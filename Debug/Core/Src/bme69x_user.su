@@ -1,0 +1,3 @@
+../Core/Src/bme69x_user.c:16:8:bme69x_i2c_read	56	static
+../Core/Src/bme69x_user.c:38:8:bme69x_i2c_write	56	static
+../Core/Src/bme69x_user.c:55:6:bme69x_delay_us	24	static,ignoring_inline_asm

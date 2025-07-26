@@ -1,3 +1,5 @@
+"./Core/Src/bme69x.o"
+"./Core/Src/bme69x_user.o"
 "./Core/Src/cst816t.o"
 "./Core/Src/dht11.o"
 "./Core/Src/font12.o"

@@ -55,7 +55,7 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+void Delay_us(uint32_t us); // Add this line
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/

@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2025 STMicroelectronics.
+  * Copyright (c) 2024 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -16,23 +16,16 @@
   ******************************************************************************
   */
 /* USER CODE END Header */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "i2c.h"
-#include "icache.h"
-#include "spi.h"
-#include "tim.h"
-#include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "cst816t.h"
-#include "stdio.h"
-#include "stdbool.h"
-#include "st7789.h"
-#include "dht11.h"
-#include "fonts.h"
-
+#include "i2c.h"         // For I2C_HandleTypeDef (hi2c1, hi2c3)
+#include "bme69x.h"      // BME69x driver definitions
+#include "bme69x_user.h" // User-defined BME69x interface functions and handle
+#include <stdio.h>       // For printf
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -42,7 +35,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+// Define BME69x I2C address (7-bit address)
+#define BME69X_I2C_ADDR_PRIM 0x76
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -52,22 +46,20 @@
 
 /* Private variables ---------------------------------------------------------*/
 
-COM_InitTypeDef BspCOMInit;
-
 /* USER CODE BEGIN PV */
-extern SPI_HandleTypeDef hspi1;
-extern I2C_HandleTypeDef hi2c1;
-
-TS_State_t touch_state;
-extern volatile bool touch_event_pending; // From cst816t.c
-
+struct bme69x_dev bme69x_sensor;
+struct bme69x_data bme69x_data;
+bme69x_i2c_user_handle_t bme69x_i2c_user_handle; // User-defined I2C handle for BME69x
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-static void SystemPower_Config(void);
+static void MX_GPIO_Init(void);
+// Declare I2C initialization functions from i2c.c or CubeMX generated files
+extern void MX_I2C1_Init(void);
+extern void MX_I2C3_Init(void);
 /* USER CODE BEGIN PFP */
-
+// No need to declare bme69x_i2c_read/write/delay_us here, as they are in bme69x_user.h
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -81,9 +73,10 @@ static void SystemPower_Config(void);
   */
 int main(void)
 {
-
   /* USER CODE BEGIN 1 */
-
+  int8_t rslt;
+  uint16_t meas_period;
+  uint8_t n_fields;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -95,184 +88,129 @@ int main(void)
 
   /* USER CODE END Init */
 
-  /* Configure the System Power */
-  SystemPower_Config();
-
   /* Configure the system clock */
   SystemClock_Config();
 
-  /* USER CODE BEGIN SysInit */
+  /* USER CODE BEGIN RTOS_MUTEX */
+  /* add mutexes, semaphores to the ISR */
+  /* USER CODE END RTOS_MUTEX */
 
-  /* USER CODE END SysInit */
+  /* USER CODE BEGIN RTOS_SEMAPHORES */
+  /* add semaphores to the ISR */
+  /* USER CODE END RTOS_SEMAPHORES */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_ICACHE_Init();
-  MX_SPI1_Init();
-  MX_TIM2_Init();
-  MX_I2C1_Init();
+  MX_I2C1_Init(); // Initialize I2C1 for LCD (as per your clarification)
+  MX_I2C3_Init(); // Initialize I2C3 for BME690
+
   /* USER CODE BEGIN 2 */
 
-  HAL_TIM_Base_Start(&htim2); // Start the timer for microsecond delays
+  // Initialize user-defined I2C handle for BME690
+  bme69x_i2c_user_handle.hi2c = &hi2c3; // BME690 uses I2C3
+  bme69x_i2c_user_handle.i2c_addr = BME69X_I2C_ADDR_PRIM;
 
-  ST7789_Init(&hspi1); // Initialize your LCD display
+  // Assign BME69x sensor structure parameters (using the functions from bme69x_user.c)
+  bme69x_sensor.intf_ptr = &bme69x_i2c_user_handle;
+  bme69x_sensor.read = bme69x_i2c_read;
+  bme69x_sensor.write = bme69x_i2c_write;
+  bme69x_sensor.delay_us = bme69x_delay_us;
+  bme69x_sensor.intf = BME69X_I2C_INTF;
 
-  DHT11_Init(); // Initialize the DHT11 module
+  // Assign dev_id (important for proper driver function)
+  bme69x_sensor.dev_id = BME69X_I2C_ADDR_PRIM;
 
-  float temp = 0.0f;
-  float hum = 0.0f;
-  char display_buffer[50];
-
-  /* USER CODE END 2 */
-
-  /* Initialize leds */
-  BSP_LED_Init(LED_GREEN);
-  BSP_LED_Init(LED_BLUE);
-  BSP_LED_Init(LED_RED);
-
-  /* Initialize USER push-button, will be used to trigger an interrupt each time it's pressed.*/
-  BSP_PB_Init(BUTTON_USER, BUTTON_MODE_EXTI);
-
-  /* Initialize COM1 port (115200, 8 bits (7-bit data + 1 stop bit), no parity */
-  BspCOMInit.BaudRate   = 115200;
-  BspCOMInit.WordLength = COM_WORDLENGTH_8B;
-  BspCOMInit.StopBits   = COM_STOPBITS_1;
-  BspCOMInit.Parity     = COM_PARITY_NONE;
-  BspCOMInit.HwFlowCtl  = COM_HWCONTROL_NONE;
-  if (BSP_COM_Init(COM1, &BspCOMInit) != BSP_ERROR_NONE)
+  // Initialize BME69x sensor
+  rslt = bme69x_init(&bme69x_sensor);
+  if (rslt != BME69X_OK)
   {
-    Error_Handler();
+      printf("BME69X Init Failed: %d\r\n", rslt);
+      Error_Handler();
   }
+  else
+  {
+      printf("BME69X Init Success!\r\n");
+  }
+
+  // Sensor settings (BME69x API v1.0.1)
+  bme69x_sensor.conf.os_hum = BME69X_OS_2X;
+  bme69x_sensor.conf.os_pres = BME69X_OS_16X;
+  bme69x_sensor.conf.os_temp = BME69X_OS_4X;
+  bme69x_sensor.conf.filter = BME69X_FILTER_SIZE_3;
+  bme69x_sensor.conf.odr = BME69X_ODR_500_MS; // Corrected from standby_time to odr
+
+  bme69x_sensor.conf.run_gas = BME69X_ENABLE_GAS_MEAS;
+  bme69x_sensor.conf.heatr_temp = 320; // Degree Celsius
+  bme69x_sensor.conf.heatr_dur = 150; // Millisecond
+  // In BME69x API v1.0.1, temp_offset is a member of bme69x_dev
+  bme69x_sensor.temp_offset = 0;
+
+  // Set the sensor configuration
+  rslt = bme69x_set_conf(&bme69x_sensor.conf, &bme69x_sensor);
+  if (rslt != BME69X_OK)
+  {
+      printf("BME69X Set Settings Failed: %d\r\n", rslt);
+      Error_Handler();
+  }
+
+  // Set the power mode to forced mode
+  rslt = bme69x_set_op_mode(BME69X_FORCED_MODE, &bme69x_sensor);
+  if (rslt != BME69X_OK)
+  {
+      printf("BME69X Set Op Mode Failed: %d\r\n", rslt);
+      Error_Handler();
+  }
+
+  // Get the recommended measurement period for forced mode
+  meas_period = bme69x_get_meas_dur(BME69X_FORCED_MODE, &bme69x_sensor.conf, &bme69x_sensor);
+
+/* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-    while (1)
-    {
-		if (DHT11_Read_Data(&temp, &hum) == 0) {
-			// Data read successfully
-			// You can now display temp and hum on your ST7789 LCD
-			ST7789_WriteString(35, 50, "Temperature:", &Font20, ST7789_WHITE, ST7789_BLACK);
-			sprintf(display_buffer, "%.1f C", temp);
-			ST7789_WriteString(80, 80, display_buffer, &Font20, ST7789_WHITE, ST7789_BLACK);
-
-			ST7789_WriteString(55, 130, "Humidity:", &Font20, ST7789_WHITE, ST7789_BLACK);
-			sprintf(display_buffer, "%.1f %%", hum);
-			ST7789_WriteString(80, 160, display_buffer, &Font20, ST7789_WHITE, ST7789_BLACK);
-
-			HAL_Delay(2000); // Read every 2 seconds
-		} else {
-			// Error reading data
-			ST7789_WriteString(20, 20, "DHT11 Error", &Font24, ST7789_RED, ST7789_BLACK);
-			HAL_Delay(500); // Wait and retry
-			}
+  while (1)
+  {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    // Delay for the measurement to complete
+    bme69x_delay_us(meas_period * 1000, bme69x_sensor.intf_ptr); // Convert ms to us for delay_us function
+
+    // Get sensor data
+    rslt = bme69x_get_data(BME69X_FORCED_MODE, &bme69x_data, &n_fields, &bme69x_sensor);
+
+    if (rslt == BME69X_OK)
+    {
+        // Print sensor data using the correct validity masks
+        if (n_fields & BME69X_TEMP_VALID_MSK)
+        {
+            printf("Temperature: %.2f degC\r\n", bme69x_data.temperature / 100.0);
+        }
+        if (n_fields & BME69X_PRES_VALID_MSK)
+        {
+            printf("Pressure: %.2f hPa\r\n", bme69x_data.pressure / 100.0);
+        }
+        if (n_fields & BME69X_HUM_VALID_MSK)
+        {
+            printf("Humidity: %.2f %%RH\r\n", bme69x_data.humidity / 1000.0);
+        }
+        if (n_fields & BME69X_GASM_VALID_MSK)
+        {
+            // Check if gas measurement is valid
+            if (bme69x_data.gas_sense_valid != 0)
+            {
+                printf("Gas Resistance: %lu Ohm\r\n", (long unsigned int)bme69x_data.gas_resistance);
+            }
+        }
     }
+    else
+    {
+        printf("BME69X Get Data Failed: %d\r\n", rslt);
+    }
+
+    HAL_Delay(1000); // Delay for 1 second before next measurement
+  }
   /* USER CODE END 3 */
-}
-
-/**
-  * @brief System Clock Configuration
-  * @retval None
-  */
-void SystemClock_Config(void)
-{
-  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
-
-  /** Configure the main internal regulator output voltage
-  */
-  if (HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Initializes the CPU, AHB and APB buses clocks
-  */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
-  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL.PLLMBOOST = RCC_PLLMBOOST_DIV1;
-  RCC_OscInitStruct.PLL.PLLM = 1;
-  RCC_OscInitStruct.PLL.PLLN = 10;
-  RCC_OscInitStruct.PLL.PLLP = 2;
-  RCC_OscInitStruct.PLL.PLLQ = 2;
-  RCC_OscInitStruct.PLL.PLLR = 1;
-  RCC_OscInitStruct.PLL.PLLRGE = RCC_PLLVCIRANGE_1;
-  RCC_OscInitStruct.PLL.PLLFRACN = 0;
-  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Initializes the CPU, AHB and APB buses clocks
-  */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2
-                              |RCC_CLOCKTYPE_PCLK3;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
-  RCC_ClkInitStruct.APB3CLKDivider = RCC_HCLK_DIV1;
-
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4) != HAL_OK)
-  {
-    Error_Handler();
-  }
-}
-
-/**
-  * @brief Power Configuration
-  * @retval None
-  */
-static void SystemPower_Config(void)
-{
-
-  /*
-   * Disable the internal Pull-Up in Dead Battery pins of UCPD peripheral
-   */
-  HAL_PWREx_DisableUCPDDeadBattery();
-
-  /*
-   * Switch to SMPS regulator instead of LDO
-   */
-  if (HAL_PWREx_ConfigSupply(PWR_SMPS_SUPPLY) != HAL_OK)
-  {
-    Error_Handler();
-  }
-/* USER CODE BEGIN PWR */
-/* USER CODE END PWR */
-}
-
-/* USER CODE BEGIN 4 */
-
-
-/* USER CODE END 4 */
-
-/**
-  * @brief  Period elapsed callback in non blocking mode
-  * @note   This function is called  when TIM17 interrupt took place, inside
-  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
-  * a global variable "uwTick" used as application time base.
-  * @param  htim : TIM handle
-  * @retval None
-  */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-  /* USER CODE BEGIN Callback 0 */
-
-  /* USER CODE END Callback 0 */
-  if (htim->Instance == TIM17)
-  {
-    HAL_IncTick();
-  }
-  /* USER CODE BEGIN Callback 1 */
-
-  /* USER CODE END Callback 1 */
 }
 
 /**
@@ -289,10 +227,11 @@ void Error_Handler(void)
   }
   /* USER CODE END Error_Handler_Debug */
 }
-#ifdef USE_FULL_ASSERT
+
+#ifdef  USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
+  * where the assert_param error has occurred.
   * @param  file: pointer to the source file name
   * @param  line: assert_param error line source number
   * @retval None
