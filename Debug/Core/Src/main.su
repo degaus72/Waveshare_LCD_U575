@@ -1,0 +1,9 @@
+../Core/Src/main.c:102:6:LCD_Init	8	static
+../Core/Src/main.c:117:6:LCD_Clear	8	static
+../Core/Src/main.c:124:6:LCD_SetCursor	16	static
+../Core/Src/main.c:135:6:LCD_PrintString	32	static
+../Core/Src/main.c:166:5:main	32	static
+../Core/Src/main.c:392:6:SystemClock_Config	128	static
+../Core/Src/main.c:445:13:SystemPower_Config	8	static
+../Core/Src/main.c:477:6:HAL_TIM_PeriodElapsedCallback	16	static
+../Core/Src/main.c:495:6:Error_Handler	4	static,ignoring_inline_asm
