@@ -23,25 +23,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
   9 .ARM.attributes 00000036  00000000  00000000  000131fc  2**0
                   CONTENTS, READONLY
- 10 .debug_info   00025c39  00000000  00000000  00013232  2**0
+ 10 .debug_info   00025c33  00000000  00000000  00013232  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 11 .debug_abbrev 00004828  00000000  00000000  00038e6b  2**0
+ 11 .debug_abbrev 00004829  00000000  00000000  00038e65  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 12 .debug_aranges 00001dd0  00000000  00000000  0003d698  2**3
+ 12 .debug_aranges 00001dd0  00000000  00000000  0003d690  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_rnglists 0000172a  00000000  00000000  0003f468  2**0
+ 13 .debug_rnglists 0000172a  00000000  00000000  0003f460  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_macro  000379fc  00000000  00000000  00040b92  2**0
+ 14 .debug_macro  000379fc  00000000  00000000  00040b8a  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_line   00028edf  00000000  00000000  0007858e  2**0
+ 15 .debug_line   00028ede  00000000  00000000  00078586  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_str    001532a9  00000000  00000000  000a146d  2**0
+ 16 .debug_str    001532a4  00000000  00000000  000a1464  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .comment      00000043  00000000  00000000  001f4716  2**0
+ 17 .comment      00000043  00000000  00000000  001f4708  2**0
                   CONTENTS, READONLY
- 18 .debug_frame  00009058  00000000  00000000  001f475c  2**2
+ 18 .debug_frame  00009058  00000000  00000000  001f474c  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_line_str 00000072  00000000  00000000  001fd7b4  2**0
+ 19 .debug_line_str 0000006d  00000000  00000000  001fd7a4  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -6563,24 +6563,20 @@ void LCD_Init(void)
 {
  8003560:	b580      	push	{r7, lr}
  8003562:	af00      	add	r7, sp, #0
-    // Initialize your ST7789 LCD using its dedicated function
-    // Assuming the ST7789_Init function takes the SPI handle.
-    ST7789_Init(&hspi1); // Pass your SPI handle (e.g., hspi1 from spi.h)
+    ST7789_Init(&hspi1);							// Initialize your ST7789 LCD using its dedicated function
  8003564:	4807      	ldr	r0, [pc, #28]	@ (8003584 <LCD_Init+0x24>)
  8003566:	f000 fca7 	bl	8003eb8 <ST7789_Init>
 
-    // Set a default rotation (adjust as per your display orientation)
-    // ST7789_SetRotation takes uint8_t 0,1,2,3 for 0,90,180,270 degrees.
-    ST7789_SetRotation(0); // Set to default portrait mode (adjust if your display needs rotation)
+    ST7789_SetRotation(0);							// ST7789_SetRotation takes uint8_t 0,1,2,3 for 0,90,180,270 degrees.
  800356a:	2000      	movs	r0, #0
  800356c:	f000 febc 	bl	80042e8 <ST7789_SetRotation>
 
-    LCD_Clear(); // Call to LCD_Clear should now be recognized
+    LCD_Clear();									// Call to LCD_Clear
  8003570:	f000 f80e 	bl	8003590 <LCD_Clear>
     printf("ST7789 LCD Initialized!\r\n");
  8003574:	4804      	ldr	r0, [pc, #16]	@ (8003588 <LCD_Init+0x28>)
  8003576:	f00a fc73 	bl	800de60 <puts>
-    current_lcd_row = 0; // Reset line counter on init
+    current_lcd_row = 0;							// Reset line counter on init
  800357a:	4b04      	ldr	r3, [pc, #16]	@ (800358c <LCD_Init+0x2c>)
  800357c:	2200      	movs	r2, #0
  800357e:	701a      	strb	r2, [r3, #0]
@@ -6597,11 +6593,10 @@ void LCD_Clear(void)
 {
  8003590:	b580      	push	{r7, lr}
  8003592:	af00      	add	r7, sp, #0
-    // Clears the entire screen to the background color
-    ST7789_FillScreen(ST7789_BLACK); // Use ST7789_BLACK or any other background color
+    ST7789_FillScreen(ST7789_BLACK);				// Clear the screen and fill it with black
  8003594:	2000      	movs	r0, #0
  8003596:	f000 fcf9 	bl	8003f8c <ST7789_FillScreen>
-    current_lcd_row = 0; // Reset row counter when screen is cleared
+    current_lcd_row = 0;							// Reset row counter when screen is cleared
  800359a:	4b02      	ldr	r3, [pc, #8]	@ (80035a4 <LCD_Clear+0x14>)
  800359c:	2200      	movs	r2, #0
  800359e:	701a      	strb	r2, [r3, #0]
@@ -6622,9 +6617,7 @@ void LCD_SetCursor(uint8_t row, uint8_t col)
  80035b2:	71fb      	strb	r3, [r7, #7]
  80035b4:	4613      	mov	r3, r2
  80035b6:	71bb      	strb	r3, [r7, #6]
-    // For graphical LCDs like ST7789, a "cursor" is often managed by the drawing functions.
-    // We'll update our internal `current_lcd_row` for `LCD_PrintString`.
-    if (row * current_font->Height < ST7789_HEIGHT)
+    if (row * current_font->Height < ST7789_HEIGHT)	// For graphical LCDs like ST7789, a "cursor" is often managed by the drawing functions.
  80035b8:	79fb      	ldrb	r3, [r7, #7]
  80035ba:	4a08      	ldr	r2, [pc, #32]	@ (80035dc <LCD_SetCursor+0x34>)
  80035bc:	6812      	ldr	r2, [r2, #0]
@@ -6632,13 +6625,13 @@ void LCD_SetCursor(uint8_t row, uint8_t col)
  80035c0:	fb02 f303 	mul.w	r3, r2, r3
  80035c4:	f5b3 7f8c 	cmp.w	r3, #280	@ 0x118
  80035c8:	da02      	bge.n	80035d0 <LCD_SetCursor+0x28>
-    {
+    {												// We'll update our internal `current_lcd_row` for `LCD_PrintString`.
         current_lcd_row = row;
  80035ca:	4a05      	ldr	r2, [pc, #20]	@ (80035e0 <LCD_SetCursor+0x38>)
  80035cc:	79fb      	ldrb	r3, [r7, #7]
  80035ce:	7013      	strb	r3, [r2, #0]
     }
-    (void)col; // Suppress unused parameter warning
+    (void)col;										// Suppress unused parameter warning
 }
  80035d0:	bf00      	nop
  80035d2:	370c      	adds	r7, #12
@@ -6656,8 +6649,7 @@ void LCD_PrintString(const char *str)
  80035e6:	b086      	sub	sp, #24
  80035e8:	af02      	add	r7, sp, #8
  80035ea:	6078      	str	r0, [r7, #4]
-    // Calculate the Y position for the current line based on font height
-    uint16_t y_pos = current_lcd_row * current_font->Height;
+    uint16_t y_pos = current_lcd_row * current_font->Height;	// Calculate the Y position for the current line based on font height
  80035ec:	4b18      	ldr	r3, [pc, #96]	@ (8003650 <LCD_PrintString+0x6c>)
  80035ee:	781b      	ldrb	r3, [r3, #0]
  80035f0:	461a      	mov	r2, r3
@@ -6666,18 +6658,16 @@ void LCD_PrintString(const char *str)
  80035f6:	88db      	ldrh	r3, [r3, #6]
  80035f8:	fb12 f303 	smulbb	r3, r2, r3
  80035fc:	81fb      	strh	r3, [r7, #14]
-    uint16_t x_pos = 0; // Start printing from the left edge
+    uint16_t x_pos = 0;											// Start printing from the left edge
  80035fe:	2300      	movs	r3, #0
  8003600:	81bb      	strh	r3, [r7, #12]
 
-    // Ensure we don't write outside the screen height
-    if (y_pos >= ST7789_HEIGHT)
+    if (y_pos >= ST7789_HEIGHT)									// Ensure we don't write outside the screen height
  8003602:	89fb      	ldrh	r3, [r7, #14]
  8003604:	f5b3 7f8c 	cmp.w	r3, #280	@ 0x118
  8003608:	d306      	bcc.n	8003618 <LCD_PrintString+0x34>
     {
-        // If we exceed screen height, wrap around to the top and clear
-        current_lcd_row = 0;
+        current_lcd_row = 0;									// If we exceed screen height, wrap around to the top and clear
  800360a:	4b11      	ldr	r3, [pc, #68]	@ (8003650 <LCD_PrintString+0x6c>)
  800360c:	2200      	movs	r2, #0
  800360e:	701a      	strb	r2, [r3, #0]
@@ -6688,9 +6678,7 @@ void LCD_PrintString(const char *str)
  8003614:	f7ff ffbc 	bl	8003590 <LCD_Clear>
     }
 
-    // Use your ST7789_WriteString function
-    // Assuming it takes x, y, string, font pointer, text color, background color
-    ST7789_WriteString(x_pos, y_pos, (char*)str, current_font, ST7789_WHITE, ST7789_BLACK); // Text color WHITE, background BLACK
+    ST7789_WriteString(x_pos, y_pos, (char*)str, current_font, ST7789_WHITE, ST7789_BLACK);		// Text colour WHITE, background BLACK
  8003618:	f9b7 000c 	ldrsh.w	r0, [r7, #12]
  800361c:	f9b7 100e 	ldrsh.w	r1, [r7, #14]
  8003620:	4b0c      	ldr	r3, [pc, #48]	@ (8003654 <LCD_PrintString+0x70>)
@@ -6702,8 +6690,7 @@ void LCD_PrintString(const char *str)
  800362e:	687a      	ldr	r2, [r7, #4]
  8003630:	f000 fe1a 	bl	8004268 <ST7789_WriteString>
 
-    // Move to the next line for the next print
-    current_lcd_row++;
+    current_lcd_row++;																			// Move to the next line for the next print
  8003634:	4b06      	ldr	r3, [pc, #24]	@ (8003650 <LCD_PrintString+0x6c>)
  8003636:	781b      	ldrb	r3, [r3, #0]
  8003638:	3301      	adds	r3, #1
@@ -6711,7 +6698,7 @@ void LCD_PrintString(const char *str)
  800363c:	4b04      	ldr	r3, [pc, #16]	@ (8003650 <LCD_PrintString+0x6c>)
  800363e:	701a      	strb	r2, [r3, #0]
 
-    printf("LCD_PrintString: %s\r\n", str); // For serial debugging
+    printf("LCD_PrintString: %s\r\n", str);														// For serial debugging
  8003640:	6879      	ldr	r1, [r7, #4]
  8003642:	4805      	ldr	r0, [pc, #20]	@ (8003658 <LCD_PrintString+0x74>)
  8003644:	f00a fba4 	bl	800dd90 <iprintf>
@@ -6770,13 +6757,10 @@ int main(void)
   MX_I2C3_Init();
  8003682:	f7ff fe4f 	bl	8003324 <MX_I2C3_Init>
   /* USER CODE BEGIN 2 */
-
-  // Initialize ST7789 LCD
-  LCD_Init(); // This will call ST7789_Init() internally
+  LCD_Init();													// This will call ST7789_Init() internally
  8003686:	f7ff ff6b 	bl	8003560 <LCD_Init>
 
-  // Initialize user-defined I2C handle for BME690
-  bme69x_i2c_user_handle.hi2c = &hi2c3; // BME690 uses I2C3
+  bme69x_i2c_user_handle.hi2c = &hi2c3;							// Initialize user-defined I2C handle for BME690
  800368a:	4b8f      	ldr	r3, [pc, #572]	@ (80038c8 <main+0x26c>)
  800368c:	4a8f      	ldr	r2, [pc, #572]	@ (80038cc <main+0x270>)
  800368e:	601a      	str	r2, [r3, #0]
@@ -6785,8 +6769,7 @@ int main(void)
  8003692:	2276      	movs	r2, #118	@ 0x76
  8003694:	711a      	strb	r2, [r3, #4]
 
-  // Assign BME69x sensor structure parameters (using the functions from bme69x_user.c)
-  bme69x_sensor.intf_ptr = &bme69x_i2c_user_handle;
+  bme69x_sensor.intf_ptr = &bme69x_i2c_user_handle;				// Assign BME69x sensor structure parameters (using the functions from bme69x_user.c)
  8003696:	4b8e      	ldr	r3, [pc, #568]	@ (80038d0 <main+0x274>)
  8003698:	4a8b      	ldr	r2, [pc, #556]	@ (80038c8 <main+0x26c>)
  800369a:	605a      	str	r2, [r3, #4]
@@ -6806,11 +6789,8 @@ int main(void)
  80036ae:	4b88      	ldr	r3, [pc, #544]	@ (80038d0 <main+0x274>)
  80036b0:	2201      	movs	r2, #1
  80036b2:	731a      	strb	r2, [r3, #12]
-  // Removed chip_id and temp_offset as they are not members of bme69x_dev in your API
-  // bme69x_sensor.chip_id = BME69X_I2C_ADDR_PRIM;
-  // bme69x_sensor.temp_offset = 0;
 
-  // Initialize BME69x sensor
+  /*   Initialize BME69x sensor   */
   rslt = bme69x_init(&bme69x_sensor);
  80036b4:	4886      	ldr	r0, [pc, #536]	@ (80038d0 <main+0x274>)
  80036b6:	f7fd fc89 	bl	8000fcc <bme69x_init>
@@ -6826,13 +6806,13 @@ int main(void)
  80036ca:	4619      	mov	r1, r3
  80036cc:	4884      	ldr	r0, [pc, #528]	@ (80038e0 <main+0x284>)
  80036ce:	f00a fb5f 	bl	800dd90 <iprintf>
-      snprintf(lcd_buffer, LCD_LINE_MAX_LEN + 1, "BME69X Init Fail: %d", rslt);
+      snprintf(lcd_buffer, LCD_LINE_MAX_LEN + 1, "BME69X Init Fail: %d", rslt);		// Display error on LCD
  80036d2:	f997 300f 	ldrsb.w	r3, [r7, #15]
  80036d6:	4a83      	ldr	r2, [pc, #524]	@ (80038e4 <main+0x288>)
  80036d8:	2129      	movs	r1, #41	@ 0x29
  80036da:	4883      	ldr	r0, [pc, #524]	@ (80038e8 <main+0x28c>)
  80036dc:	f00a fa60 	bl	800dba0 <sniprintf>
-      LCD_SetCursor(0, 0); // Display error on LCD
+      LCD_SetCursor(0, 0);
  80036e0:	2100      	movs	r1, #0
  80036e2:	2000      	movs	r0, #0
  80036e4:	f7ff ff60 	bl	80035a8 <LCD_SetCursor>
@@ -6848,24 +6828,24 @@ int main(void)
       printf("BME69X Init Success!\r\n");
  80036f4:	487d      	ldr	r0, [pc, #500]	@ (80038ec <main+0x290>)
  80036f6:	f00a fbb3 	bl	800de60 <puts>
-      snprintf(lcd_buffer, LCD_LINE_MAX_LEN + 1, "BME69X Init OK");
+      snprintf(lcd_buffer, LCD_LINE_MAX_LEN + 1, "BME69X Init OK");					// Display success on LCD
  80036fa:	4a7d      	ldr	r2, [pc, #500]	@ (80038f0 <main+0x294>)
  80036fc:	2129      	movs	r1, #41	@ 0x29
  80036fe:	487a      	ldr	r0, [pc, #488]	@ (80038e8 <main+0x28c>)
  8003700:	f00a fa4e 	bl	800dba0 <sniprintf>
-      LCD_SetCursor(7, 0); // Display success on LCD
+      LCD_SetCursor(7, 0);
  8003704:	2100      	movs	r1, #0
  8003706:	2007      	movs	r0, #7
  8003708:	f7ff ff4e 	bl	80035a8 <LCD_SetCursor>
       LCD_PrintString(lcd_buffer);
  800370c:	4876      	ldr	r0, [pc, #472]	@ (80038e8 <main+0x28c>)
  800370e:	f7ff ff69 	bl	80035e4 <LCD_PrintString>
-      HAL_Delay(500); // Small delay to show init message
+      HAL_Delay(500);																// Small delay to show init message
  8003712:	f44f 70fa 	mov.w	r0, #500	@ 0x1f4
  8003716:	f001 fb15 	bl	8004d44 <HAL_Delay>
   }
 
-  // TPH Sensor configuration for bme69x_conf (separate struct)
+  /*   TPH Sensor configuration for bme69x_conf (separate struct)   */
   bme69x_conf.os_hum = BME69X_OS_2X;
  800371a:	4b76      	ldr	r3, [pc, #472]	@ (80038f4 <main+0x298>)
  800371c:	2202      	movs	r2, #2
@@ -6882,12 +6862,12 @@ int main(void)
  800372c:	4b71      	ldr	r3, [pc, #452]	@ (80038f4 <main+0x298>)
  800372e:	2202      	movs	r2, #2
  8003730:	70da      	strb	r2, [r3, #3]
-  bme69x_conf.odr = BME69X_ODR_500_MS; // Output Data Rate
+  bme69x_conf.odr = BME69X_ODR_500_MS;												// Output Data Rate
  8003732:	4b70      	ldr	r3, [pc, #448]	@ (80038f4 <main+0x298>)
  8003734:	2204      	movs	r2, #4
  8003736:	711a      	strb	r2, [r3, #4]
 
-  // Set the TPH sensor configuration
+  /*   Set the TPH sensor configuration   */
   rslt = bme69x_set_conf(&bme69x_conf, &bme69x_sensor);
  8003738:	4965      	ldr	r1, [pc, #404]	@ (80038d0 <main+0x274>)
  800373a:	486e      	ldr	r0, [pc, #440]	@ (80038f4 <main+0x298>)
@@ -6904,13 +6884,13 @@ int main(void)
  8003750:	4619      	mov	r1, r3
  8003752:	4869      	ldr	r0, [pc, #420]	@ (80038f8 <main+0x29c>)
  8003754:	f00a fb1c 	bl	800dd90 <iprintf>
-      snprintf(lcd_buffer, LCD_LINE_MAX_LEN + 1, "BME69X TPH Conf Fail: %d", rslt);
+      snprintf(lcd_buffer, LCD_LINE_MAX_LEN + 1, "BME69X TPH Conf Fail: %d", rslt);	// Display error on LCD
  8003758:	f997 300f 	ldrsb.w	r3, [r7, #15]
  800375c:	4a67      	ldr	r2, [pc, #412]	@ (80038fc <main+0x2a0>)
  800375e:	2129      	movs	r1, #41	@ 0x29
  8003760:	4861      	ldr	r0, [pc, #388]	@ (80038e8 <main+0x28c>)
  8003762:	f00a fa1d 	bl	800dba0 <sniprintf>
-      LCD_SetCursor(1, 0); // Display error on LCD
+      LCD_SetCursor(1, 0);
  8003766:	2100      	movs	r1, #0
  8003768:	2001      	movs	r0, #1
  800376a:	f7ff ff1d 	bl	80035a8 <LCD_SetCursor>
@@ -6921,21 +6901,21 @@ int main(void)
  8003774:	f000 fa10 	bl	8003b98 <Error_Handler>
   }
 
-  // Populate the bme69x_heatr_conf struct
-  heatr_config.heatr_temp = 320; // Degree Celsius
+  /*   Populate the bme69x_heatr_conf struct   */
+  heatr_config.heatr_temp = 320;													// Degree Celsius
  8003778:	4b61      	ldr	r3, [pc, #388]	@ (8003900 <main+0x2a4>)
  800377a:	f44f 72a0 	mov.w	r2, #320	@ 0x140
  800377e:	805a      	strh	r2, [r3, #2]
-  heatr_config.heatr_dur = 150; // Millisecond
+  heatr_config.heatr_dur = 150;														// Millisecond
  8003780:	4b5f      	ldr	r3, [pc, #380]	@ (8003900 <main+0x2a4>)
  8003782:	2296      	movs	r2, #150	@ 0x96
  8003784:	809a      	strh	r2, [r3, #4]
-  heatr_config.enable = BME69X_ENABLE_GAS_MEAS; // Assuming 'enable' is the field name for running gas
+  heatr_config.enable = BME69X_ENABLE_GAS_MEAS;										// Assuming 'enable' is the field name for running gas
  8003786:	4b5e      	ldr	r3, [pc, #376]	@ (8003900 <main+0x2a4>)
  8003788:	2201      	movs	r2, #1
  800378a:	701a      	strb	r2, [r3, #0]
 
-  // Call bme69x_set_heatr_conf with the correct arguments: op_mode, pointer to heatr_config, and device pointer
+  /*   Call bme69x_set_heatr_conf with the correct arguments: op_mode, pointer to heatr_config, and device pointer   */
   rslt = bme69x_set_heatr_conf(BME69X_FORCED_MODE, &heatr_config, &bme69x_sensor);
  800378c:	4a50      	ldr	r2, [pc, #320]	@ (80038d0 <main+0x274>)
  800378e:	495c      	ldr	r1, [pc, #368]	@ (8003900 <main+0x2a4>)
@@ -6953,13 +6933,13 @@ int main(void)
  80037a6:	4619      	mov	r1, r3
  80037a8:	4856      	ldr	r0, [pc, #344]	@ (8003904 <main+0x2a8>)
  80037aa:	f00a faf1 	bl	800dd90 <iprintf>
-      snprintf(lcd_buffer, LCD_LINE_MAX_LEN + 1, "BME69X Heater Fail: %d", rslt);
+      snprintf(lcd_buffer, LCD_LINE_MAX_LEN + 1, "BME69X Heater Fail: %d", rslt);	// Display error on LCD
  80037ae:	f997 300f 	ldrsb.w	r3, [r7, #15]
  80037b2:	4a55      	ldr	r2, [pc, #340]	@ (8003908 <main+0x2ac>)
  80037b4:	2129      	movs	r1, #41	@ 0x29
  80037b6:	484c      	ldr	r0, [pc, #304]	@ (80038e8 <main+0x28c>)
  80037b8:	f00a f9f2 	bl	800dba0 <sniprintf>
-      LCD_SetCursor(2, 0); // Display error on LCD
+      LCD_SetCursor(2, 0);
  80037bc:	2100      	movs	r1, #0
  80037be:	2002      	movs	r0, #2
  80037c0:	f7ff fef2 	bl	80035a8 <LCD_SetCursor>
@@ -6970,7 +6950,7 @@ int main(void)
  80037ca:	f000 f9e5 	bl	8003b98 <Error_Handler>
   }
 
-  // Set the power mode to forced mode
+  /*   Set the power mode to forced mode   */
   rslt = bme69x_set_op_mode(BME69X_FORCED_MODE, &bme69x_sensor);
  80037ce:	4940      	ldr	r1, [pc, #256]	@ (80038d0 <main+0x274>)
  80037d0:	2001      	movs	r0, #1
@@ -6987,13 +6967,13 @@ int main(void)
  80037e6:	4619      	mov	r1, r3
  80037e8:	4848      	ldr	r0, [pc, #288]	@ (800390c <main+0x2b0>)
  80037ea:	f00a fad1 	bl	800dd90 <iprintf>
-      snprintf(lcd_buffer, LCD_LINE_MAX_LEN + 1, "BME69X Mode Fail: %d", rslt);
+      snprintf(lcd_buffer, LCD_LINE_MAX_LEN + 1, "BME69X Mode Fail: %d", rslt);		// Display error on LCD
  80037ee:	f997 300f 	ldrsb.w	r3, [r7, #15]
  80037f2:	4a47      	ldr	r2, [pc, #284]	@ (8003910 <main+0x2b4>)
  80037f4:	2129      	movs	r1, #41	@ 0x29
  80037f6:	483c      	ldr	r0, [pc, #240]	@ (80038e8 <main+0x28c>)
  80037f8:	f00a f9d2 	bl	800dba0 <sniprintf>
-      LCD_SetCursor(3, 0); // Display error on LCD
+      LCD_SetCursor(3, 0);
  80037fc:	2100      	movs	r1, #0
  80037fe:	2003      	movs	r0, #3
  8003800:	f7ff fed2 	bl	80035a8 <LCD_SetCursor>
@@ -7004,7 +6984,7 @@ int main(void)
  800380a:	f000 f9c5 	bl	8003b98 <Error_Handler>
   }
 
-  // Get the recommended measurement period for forced mode in microseconds
+  /*   Get the recommended measurement period for forced mode in microseconds   */
   meas_period_us = bme69x_get_meas_dur(BME69X_FORCED_MODE, &bme69x_conf, &bme69x_sensor) * 1000;
  800380e:	4a30      	ldr	r2, [pc, #192]	@ (80038d0 <main+0x274>)
  8003810:	4938      	ldr	r1, [pc, #224]	@ (80038f4 <main+0x298>)
@@ -7015,8 +6995,9 @@ int main(void)
  800381e:	fb02 f303 	mul.w	r3, r2, r3
  8003822:	60bb      	str	r3, [r7, #8]
 
-  LCD_Clear(); // Clear display before starting main loop measurements
+  LCD_Clear(); 																		// Clear display before starting main loop measurements
  8003824:	f7ff feb4 	bl	8003590 <LCD_Clear>
+
   /* USER CODE END 2 */
 
   /* Initialize leds */
@@ -7067,20 +7048,19 @@ int main(void)
   {
     Error_Handler();
  8003870:	f000 f992 	bl	8003b98 <Error_Handler>
+  while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    // Delay for the measurement to complete
-    bme69x_delay_us(meas_period_us, bme69x_sensor.intf_ptr);
+    bme69x_delay_us(meas_period_us, bme69x_sensor.intf_ptr);								// Delay for the measurement to complete
  8003874:	4b16      	ldr	r3, [pc, #88]	@ (80038d0 <main+0x274>)
  8003876:	685b      	ldr	r3, [r3, #4]
  8003878:	4619      	mov	r1, r3
  800387a:	68b8      	ldr	r0, [r7, #8]
  800387c:	f7ff fc26 	bl	80030cc <bme69x_delay_us>
 
-    // Set sensor to forced mode again before reading
-    rslt = bme69x_set_op_mode(BME69X_FORCED_MODE, &bme69x_sensor);
+    rslt = bme69x_set_op_mode(BME69X_FORCED_MODE, &bme69x_sensor);							// Set sensor to forced mode again before reading
  8003880:	4913      	ldr	r1, [pc, #76]	@ (80038d0 <main+0x274>)
  8003882:	2001      	movs	r0, #1
  8003884:	f7fd fdf0 	bl	8001468 <bme69x_set_op_mode>
@@ -7139,8 +7119,7 @@ int main(void)
  800391c:	08010274 	.word	0x08010274
     }
 
-    // Get sensor data. The 'n_fields' parameter is still required.
-    rslt = bme69x_get_data(BME69X_FORCED_MODE, &bme69x_data, &n_fields, &bme69x_sensor);
+    rslt = bme69x_get_data(BME69X_FORCED_MODE, &bme69x_data, &n_fields, &bme69x_sensor);	// Get sensor data. The 'n_fields' parameter is still required.
  8003920:	1dfa      	adds	r2, r7, #7
  8003922:	4b53      	ldr	r3, [pc, #332]	@ (8003a70 <main+0x414>)
  8003924:	4953      	ldr	r1, [pc, #332]	@ (8003a74 <main+0x418>)
@@ -7308,10 +7287,10 @@ int main(void)
  8003a60:	f7ff fdc0 	bl	80035e4 <LCD_PrintString>
     }
 
-    HAL_Delay(2000); // Delay for 2 seconds before next measurement cycle
- 8003a64:	f44f 60fa 	mov.w	r0, #2000	@ 0x7d0
+    HAL_Delay(500); 												// Delay for 0.5 seconds before next measurement cycle
+ 8003a64:	f44f 70fa 	mov.w	r0, #500	@ 0x1f4
  8003a68:	f001 f96c 	bl	8004d44 <HAL_Delay>
-    bme69x_delay_us(meas_period_us, bme69x_sensor.intf_ptr);
+    bme69x_delay_us(meas_period_us, bme69x_sensor.intf_ptr);								// Delay for the measurement to complete
  8003a6c:	e702      	b.n	8003874 <main+0x218>
  8003a6e:	bf00      	nop
  8003a70:	200002d0 	.word	0x200002d0
