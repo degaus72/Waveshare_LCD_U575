@@ -70,7 +70,7 @@ extern SPI_HandleTypeDef hspi1;					 // Assume your main SPI handle for the LCD 
 
 static uint8_t current_lcd_row = 0;				 // Global variable to keep track of the current line for printing
 
-const sFONT* current_font = &Font16; 			 // Using Font16 as a default, from fonts.h.
+const sFONT* current_font = &Font20; 			 // Using Font16 as a default, from fonts.h.
 
 /* USER CODE END PV */
 
@@ -201,7 +201,7 @@ int main(void)
   {
       printf("BME69X Init Success!\r\n");
       snprintf(lcd_buffer, LCD_LINE_MAX_LEN + 1, "BME69X Init OK");					// Display success on LCD
-      LCD_SetCursor(7, 0);
+      LCD_SetCursor(3, 1);
       LCD_PrintString(lcd_buffer);
       HAL_Delay(500);																// Small delay to show init message
   }
