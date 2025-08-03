@@ -72,6 +72,10 @@ void Delay_us(uint32_t us); // Add this line
 #define ST7789_DC_GPIO_Port GPIOB
 #define ST7789_BL_Pin GPIO_PIN_1
 #define ST7789_BL_GPIO_Port GPIOB
+#define ST67W611M1_BOOT_Pin GPIO_PIN_9
+#define ST67W611M1_BOOT_GPIO_Port GPIOE
+#define ST67W611M1_CHIP_EN_Pin GPIO_PIN_11
+#define ST67W611M1_CHIP_EN_GPIO_Port GPIOE
 #define DHT11_DATA_Pin GPIO_PIN_8
 #define DHT11_DATA_GPIO_Port GPIOB
 

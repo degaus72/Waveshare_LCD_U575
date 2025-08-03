@@ -22,6 +22,7 @@
 #include "icache.h"
 #include "spi.h"
 #include "tim.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -101,7 +102,7 @@ void LCD_Init(void)
 
 void LCD_Clear(void)
 {
-    ST7789_FillScreen(ST7789_BLACK);				// Clear the screen and fill it with black
+    ST7789_FillScreen(ST7789_BLUE);					// Clear the screen and fill it with black
     current_lcd_row = 0;							// Reset row counter when screen is cleared
 }
 
@@ -126,7 +127,7 @@ void LCD_PrintString(const char *str)
         LCD_Clear();
     }
 
-    ST7789_WriteString(x_pos, y_pos, (char*)str, current_font, ST7789_WHITE, ST7789_BLACK);		// Text colour WHITE, background BLACK
+    ST7789_WriteString(x_pos, y_pos, (char*)str, current_font, ST7789_WHITE, ST7789_BLUE);		// Text colour WHITE, background BLACK
 
     current_lcd_row++;																			// Move to the next line for the next print
 
@@ -175,6 +176,7 @@ int main(void)
   MX_TIM2_Init();
   MX_I2C1_Init();
   MX_I2C3_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   LCD_Init();													// This will call ST7789_Init() internally
 

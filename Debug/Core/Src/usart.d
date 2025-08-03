@@ -1,5 +1,5 @@
-Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
- ../Drivers/STM32U5xx_HAL_Driver/Inc/stm32u5xx_hal.h \
+Core/Src/usart.o: ../Core/Src/usart.c ../Core/Inc/usart.h \
+ ../Core/Inc/main.h ../Drivers/STM32U5xx_HAL_Driver/Inc/stm32u5xx_hal.h \
  ../Core/Inc/stm32u5xx_hal_conf.h \
  ../Drivers/STM32U5xx_HAL_Driver/Inc/stm32u5xx_hal_rcc.h \
  ../Drivers/STM32U5xx_HAL_Driver/Inc/stm32u5xx_hal_def.h \
@@ -34,13 +34,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32U5xx_HAL_Driver/Inc/stm32u5xx_hal_exti.h \
  ../Drivers/BSP/STM32U5xx_Nucleo/stm32u5xx_nucleo.h \
  ../Core/Inc/stm32u5xx_nucleo_conf.h \
- ../Drivers/BSP/STM32U5xx_Nucleo/stm32u5xx_nucleo_errno.h \
- ../Core/Inc/i2c.h ../Core/Inc/main.h ../Core/Inc/icache.h \
- ../Core/Inc/spi.h ../Core/Inc/tim.h ../Core/Inc/usart.h \
- ../Core/Inc/gpio.h ../Core/Inc/bme69x.h ../Core/Inc/bme69x_defs.h \
- ../Core/Inc/bme69x_defs.h ../Core/Inc/bme69x_user.h ../Core/Inc/i2c.h \
- ../Core/Inc/bme69x.h ../Core/Inc/ST7789.h ../Core/Inc/fonts.h \
- ../Core/Inc/spi.h ../Core/Inc/gpio.h
+ ../Drivers/BSP/STM32U5xx_Nucleo/stm32u5xx_nucleo_errno.h
+../Core/Inc/usart.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32U5xx_HAL_Driver/Inc/stm32u5xx_hal.h:
 ../Core/Inc/stm32u5xx_hal_conf.h:
@@ -78,20 +73,3 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Drivers/BSP/STM32U5xx_Nucleo/stm32u5xx_nucleo.h:
 ../Core/Inc/stm32u5xx_nucleo_conf.h:
 ../Drivers/BSP/STM32U5xx_Nucleo/stm32u5xx_nucleo_errno.h:
-../Core/Inc/i2c.h:
-../Core/Inc/main.h:
-../Core/Inc/icache.h:
-../Core/Inc/spi.h:
-../Core/Inc/tim.h:
-../Core/Inc/usart.h:
-../Core/Inc/gpio.h:
-../Core/Inc/bme69x.h:
-../Core/Inc/bme69x_defs.h:
-../Core/Inc/bme69x_defs.h:
-../Core/Inc/bme69x_user.h:
-../Core/Inc/i2c.h:
-../Core/Inc/bme69x.h:
-../Core/Inc/ST7789.h:
-../Core/Inc/fonts.h:
-../Core/Inc/spi.h:
-../Core/Inc/gpio.h:
